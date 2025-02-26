@@ -6,12 +6,15 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - .:/app:cached
       - /app/node_modules
     env_file:
       - env/.env.dev
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true  # Enables hot reloading inside Docker
-    stdin_open: true  # Equivalent to -i in docker run
-    tty: true  # Equivalent to -t in docker run
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - WDS_SOCKET_PORT=3000
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
