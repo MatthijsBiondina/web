@@ -11,6 +11,7 @@ services:
     env_file:
       - env/.env.dev
     environment:
+      - ESLINT_NO_DEV_ERRORS=true
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
       - FAST_REFRESH=true
