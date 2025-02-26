@@ -30,6 +30,8 @@ import HomePage from "layouts/pages/landing-pages/home";
 // Material Kit 2 PRO React routes
 import routes from "routes";
 import PortalOverviewPage from "layouts/pages/portal/overview";
+import SignInPage from "layouts/authentication/sign-in";
+import SignUpPage from "layouts/authentication/sign-up";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -59,7 +61,16 @@ export default function App() {
       <Routes>
         {getRoutes(routes)}
 
+        {/* Landing Pages */}
         <Route path="/home" element={<HomePage />} />
+
+        {/* Authenticatie */}
+        <Route path="/authenticatie">
+          <Route path="inloggen" element={<SignInPage />} />
+          <Route path="registreren" element={<SignUpPage />} />
+          <Route path="*" element={<Navigate to="/authenticatie/inloggen" replace />} />
+        </Route>
+
         <Route path="/portaal" element={<PortalOverviewPage />} />
 
         <Route path="*" element={<Navigate to="/home" />} />

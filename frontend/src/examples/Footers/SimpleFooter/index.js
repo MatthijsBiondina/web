@@ -29,10 +29,10 @@ import MKTypography from "components/MKTypography";
 import typography from "assets/theme/base/typography";
 
 function SimpleFooter({
-  company = { href: "https://www.creative-tim.com/", name: "Creative Tim" },
+  company = { href: "/home", name: "Professor Dog" },
   links = [
     { href: "https://www.creative-tim.com/", name: "Creative Tim" },
-    { href: "https://www.creative-tim.com/presentation", name: "About Us" },
+    { href: "/portaal", name: "About Us" },
     { href: "https://www.creative-tim.com/blog", name: "Blog" },
     { href: "https://www.creative-tim.com/license", name: "License" },
   ],

@@ -13,9 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-// Material Kit 2 PRO React pages
-import SignInSimple from "pages/Authentication/SignIn/Simple";
+import SignIn from "pages/Authentication/SignIn";
 
-export default function SignInSimplePage() {
-  return <SignInSimple />;
+// Material Kit 2 PRO React pages
+
+export default function SignInPage() {
+  return <SignIn />;
 }

@@ -14,8 +14,8 @@ Coded by www.creative-tim.com
 */
 
 // Material Kit 2 PRO React pages
-import SignInIllustration from "pages/Authentication/SignIn/Illustration";
+import SignUp from "pages/Authentication/SignUp";
 
-export default function SignInIllustrationPage() {
-  return <SignInIllustration />;
+export default function SignUpPage() {
+  return <SignUp />;
 }

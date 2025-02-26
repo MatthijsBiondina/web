@@ -55,8 +55,8 @@ export default {
   },
 
   info: {
-    main: "#1A73E8",
-    focus: "#1662C4",
+    main: "#2E3426",
+    focus: "#3B493C",
   },
 
   success: {
@@ -108,8 +108,8 @@ export default {
     },
 
     info: {
-      main: "#49a3f1",
-      state: "#1A73E8",
+      main: "#384438",
+      state: "#2E3426",
     },
 
     success: {
@@ -245,7 +245,7 @@ export default {
   coloredShadows: {
     primary: "#e91e62",
     secondary: "#110e0e",
-    info: "#00bbd4",
+    info: "#201B15",
     success: "#4caf4f",
     warning: "#ff9900",
     error: "#f44336",

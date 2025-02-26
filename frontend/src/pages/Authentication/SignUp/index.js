@@ -18,7 +18,14 @@ import { Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 import Checkbox from "@mui/material/Checkbox";
+import MuiLink from "@mui/material/Link";
+
+// @mui icons
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GoogleIcon from "@mui/icons-material/Google";
+import AppleIcon from "@mui/icons-material/Apple";
 
 // Material Kit 2 PRO React components
 import MKBox from "components/MKBox";
@@ -27,14 +34,14 @@ import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
 
 // Authentication layout components
-import CoverLayout from "pages/Authentication/components/CoverLayout";
 
 // Images
-import bgImage from "assets/images/bg-sign-up-cover.jpeg";
+import bgImage from "assets/images/bg-home.jpg";
+import BasicLayout from "../components/BasicLayout";
 
-function Cover() {
+function SignUp() {
   return (
-    <CoverLayout image={bgImage}>
+    <BasicLayout image={bgImage}>
       <Card>
         <MKBox
           variant="gradient"
@@ -48,22 +55,36 @@ function Cover() {
           textAlign="center"
         >
           <MKTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Join us today
+            Maak een account aan
           </MKTypography>
-          <MKTypography display="block" variant="button" color="white" my={1}>
-            Enter your email and password to register
-          </MKTypography>
+          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
+            <Grid item xs={2}>
+              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
+                <GoogleIcon color="inherit" />
+              </MKTypography>
+            </Grid>
+            <Grid item xs={2}>
+              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
+                <FacebookIcon color="inherit" />
+              </MKTypography>
+            </Grid>
+            <Grid item xs={2}>
+              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
+                <AppleIcon color="inherit" />
+              </MKTypography>
+            </Grid>
+          </Grid>
         </MKBox>
         <MKBox p={3}>
           <MKBox component="form" role="form">
             <MKBox mb={2}>
-              <MKInput type="text" label="Name" fullWidth />
+              <MKInput type="text" label="Naam" fullWidth />
             </MKBox>
             <MKBox mb={2}>
               <MKInput type="email" label="Email" fullWidth />
             </MKBox>
             <MKBox mb={2}>
-              <MKInput type="password" label="Password" fullWidth />
+              <MKInput type="password" label="Wachtwoord" fullWidth />
             </MKBox>
             <MKBox display="flex" alignItems="center" ml={-1}>
               <Checkbox />
@@ -73,7 +94,7 @@ function Cover() {
                 color="text"
                 sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
               >
-                &nbsp;&nbsp;I agree the&nbsp;
+                &nbsp;&nbsp;Ik ga akkoord met de&nbsp;
               </MKTypography>
               <MKTypography
                 component="a"
@@ -83,34 +104,35 @@ function Cover() {
                 color="info"
                 textGradient
               >
-                Terms and Conditions
+                Algemene Voorwaarden
               </MKTypography>
             </MKBox>
             <MKBox mt={3} mb={1}>
               <MKButton variant="gradient" color="info" fullWidth>
-                sign in
+                registeren
               </MKButton>
             </MKBox>
             <MKBox mt={3} mb={1} textAlign="center">
               <MKTypography variant="button" color="text">
-                Already have an account?{" "}
+                Heb je al een account? Ga naar{" "}
                 <MKTypography
                   component={Link}
-                  to="/authentication/sign-in/cover"
+                  to="/authenticatie/inloggen"
                   variant="button"
                   color="info"
                   fontWeight="medium"
                   textGradient
                 >
-                  Sign In
+                  Inloggen
                 </MKTypography>
+                .
               </MKTypography>
             </MKBox>
           </MKBox>
         </MKBox>
       </Card>
-    </CoverLayout>
+    </BasicLayout>
   );
 }
 
-export default Cover;
+export default SignUp;
