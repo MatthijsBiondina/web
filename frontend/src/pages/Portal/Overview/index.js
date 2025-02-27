@@ -29,18 +29,18 @@ import DefaultFooter from "examples/Footers/DefaultFooter";
 // Rental page sections
 
 // Routes
-import routes from "routes";
 import footerRoutes from "footer.routes";
 
 // Images
 import bgImage from "assets/images/bg-home.jpg";
 import Actions from "./sections/Actions";
+import portalRoutes from "routes/portal-routes";
 
 function PortalOverview() {
   return (
     <>
       <DefaultNavbar
-        routes={routes}
+        routes={portalRoutes}
         // action={{
         //   type: "external",
         //   route: "https://www.creative-tim.com/product/material-kit-pro-react",

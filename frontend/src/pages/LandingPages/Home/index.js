@@ -133,39 +133,6 @@ function Home() {
         }}
       >
         <Information />
-        <Testimonials />
-        <AboutUs />
-        <Places />
-        <Container>
-          <MKBox
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderRadius="xl"
-            my={24}
-            p={6}
-            sx={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1533563906091-fdfdffc3e3c4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80)",
-            }}
-          >
-            <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} md={8} lg={5}>
-                <MKTypography variant="h5" color="white" fontWeight="bold">
-                  For being a bright color. For standing out. But the time is now to be okay to be
-                  the greatest you.
-                </MKTypography>
-              </Grid>
-              <Grid item xs={12} lg={6} sx={{ ml: "auto" }}>
-                <MKBox width="12rem" ml="auto">
-                  <MKButton variant="gradient" color="warning" fullWidth sx={{ boxShadow: "none" }}>
-                    start now
-                  </MKButton>
-                </MKBox>
-              </Grid>
-            </Grid>
-          </MKBox>
-        </Container>
       </Card>
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />

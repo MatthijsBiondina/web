@@ -14,6 +14,7 @@ Coded by www.creative-tim.com
 */
 
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -22,11 +23,13 @@ import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import MuiLink from "@mui/material/Link";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
-import AppleIcon from "@mui/icons-material/Apple";
+import MicrosoftIcon from "@mui/icons-material/Window";
 
 // Material Kit 2 PRO React components
 import MKBox from "components/MKBox";
@@ -37,10 +40,103 @@ import MKButton from "components/MKButton";
 // Authentication pages components
 import BasicLayout from "pages/Authentication/components/BasicLayout";
 
+// Firebase authentication
+import { useAuth } from "contexts/AuthContext";
+import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "../../../firebase";
+
 // Images
 import bgImage from "assets/images/bg-home.jpg";
 
 function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const { currentUser, login } = useAuth();
+  const navigate = useNavigate();
+
+  if (currentUser) {
+    return <Navigate to="/portaal" replace />;
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      setError("Vul zowel e-mail als wachtwoord in.");
+      setOpenAlert(true);
+      return;
+    }
+
+    try {
+      setError("");
+      setLoading(true);
+      await login(email, password);
+      setSuccess("Succesvol ingelogd.");
+      setOpenAlert(true);
+      // Redirect to portal after succesful login
+      setTimeout(() => {
+        navigate("/portaal");
+      }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(
+        error.code === "auth/invalid-credential"
+          ? "Ongeldige e-mail of wachtwoord"
+          : "Er is een fout opgetreden bij het inloggen"
+      );
+      setOpenAlert(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProviderSignIn = async (provider, providerName) => {
+    try {
+      setLoading(true);
+      await signInWithPopup(auth, provider);
+      setSuccess(`Succesvol ingelogd met ${providerName}.`);
+      setOpenAlert(true);
+      setTimeout(() => {
+        navigate("/portaal");
+      }, 1500);
+    } catch (error) {
+      console.error(`${providerName} sign in error:`, error);
+      setError(`Er is een fout opgetreden bij het inloggen met ${providerName}`);
+      setOpenAlert(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    await handleProviderSignIn(provider, "Google");
+  };
+
+  const handleFacebookSignIn = async () => {
+    const provider = new FacebookAuthProvider();
+    await handleProviderSignIn(provider, "Facebook");
+  };
+
+  const handleMicrosoftSignIn = async () => {
+    const provider = new OAuthProvider("microsoft.com");
+    await handleProviderSignIn(provider, "Microsoft");
+  };
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
   return (
     <BasicLayout image={bgImage}>
       <Card>
@@ -60,33 +156,72 @@ function SignIn() {
           </MKTypography>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
             <Grid item xs={2}>
-              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
+              <MKTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleGoogleSignIn();
+                }}
+              >
                 <GoogleIcon color="inherit" />
               </MKTypography>
             </Grid>
             <Grid item xs={2}>
-              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
+              <MKTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleFacebookSignIn();
+                }}
+              >
                 <FacebookIcon color="inherit" />
               </MKTypography>
             </Grid>
             <Grid item xs={2}>
-              <MKTypography component={MuiLink} href="#" variant="body1" color="white">
-                <AppleIcon color="inherit" />
+              <MKTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleMicrosoftSignIn();
+                }}
+              >
+                <MicrosoftIcon color="inherit" />
               </MKTypography>
             </Grid>
           </Grid>
         </MKBox>
         <MKBox pt={4} pb={3} px={3}>
-          <MKBox component="form" role="form">
+          <MKBox component="form" role="form" onSubmit={handleSubmit}>
             <MKBox mb={2}>
-              <MKInput type="email" label="Email" fullWidth />
+              <MKInput
+                type="email"
+                label="E-mail"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </MKBox>
             <MKBox mb={2}>
-              <MKInput type="password" label="Password" fullWidth />
+              <MKInput
+                type="password"
+                label="Password"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </MKBox>
             <MKBox mt={4} mb={1}>
-              <MKButton variant="gradient" color="info" fullWidth>
-                inloggen
+              <MKButton variant="gradient" color="info" fullWidth type="submit" disabled={loading}>
+                {loading ? "Bezig met inloggen..." : "Inloggen"}
               </MKButton>
             </MKBox>
             <MKBox mt={3} mb={1} textAlign="center">
@@ -108,6 +243,17 @@ function SignIn() {
           </MKBox>
         </MKBox>
       </Card>
+
+      {/* Notification Alerts */}
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert
+          onClose={handleCloseAlert}
+          severity={error ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {error || success}
+        </Alert>
+      </Snackbar>
     </BasicLayout>
   );
 }
