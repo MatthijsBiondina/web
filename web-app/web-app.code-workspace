@@ -1,0 +1,32 @@
+{
+  "folders": [
+    {
+      "name": "Web App (Root)",
+      "path": "."
+    },
+    {
+      "name": "Frontend",
+      "path": "./frontend"
+    },
+    {
+      "name": "Backend",
+      "path": "./backend"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "frontend/node_modules": true,
+      "backend/node_modules": true
+    },
+    "editor.formatOnSave": true,
+    "javascript.format.enable": true,
+    "eslint.workingDirectories": ["./frontend", "./backend"]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}
