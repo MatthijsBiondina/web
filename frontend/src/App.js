@@ -32,6 +32,7 @@ import routes from "routes";
 import PortalOverviewPage from "layouts/pages/portal/overview";
 import SignInPage from "layouts/authentication/sign-in";
 import SignUpPage from "layouts/authentication/sign-up";
+import { AuthProvider } from "./contexts/AuthContext";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -56,25 +57,27 @@ export default function App() {
     });
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Routes>
-        {getRoutes(routes)}
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          {getRoutes(routes)}
 
-        {/* Landing Pages */}
-        <Route path="/home" element={<HomePage />} />
+          {/* Landing Pages */}
+          <Route path="/home" element={<HomePage />} />
 
-        {/* Authenticatie */}
-        <Route path="/authenticatie">
-          <Route path="inloggen" element={<SignInPage />} />
-          <Route path="registreren" element={<SignUpPage />} />
-          <Route path="*" element={<Navigate to="/authenticatie/inloggen" replace />} />
-        </Route>
+          {/* Authenticatie */}
+          <Route path="/authenticatie">
+            <Route path="inloggen" element={<SignInPage />} />
+            <Route path="registreren" element={<SignUpPage />} />
+            <Route path="*" element={<Navigate to="/authenticatie/inloggen" replace />} />
+          </Route>
 
-        <Route path="/portaal" element={<PortalOverviewPage />} />
+          <Route path="/portaal" element={<PortalOverviewPage />} />
 
-        <Route path="*" element={<Navigate to="/home" />} />
-      </Routes>
-    </ThemeProvider>
+          <Route path="*" element={<Navigate to="/home" />} />
+        </Routes>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
