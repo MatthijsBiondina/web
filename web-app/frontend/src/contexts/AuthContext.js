@@ -39,14 +39,25 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function signup(email, password) {
+  async function signup(email, password, acceptedTerms) {
     try {
       setError("");
+
+      if (!email || !password) {
+        setError("Vul alle verplichte velden in.");
+        return { success: false, error: new Error("Missing required field.") };
+      }
+
+      if (!acceptedTerms) {
+        setError("Je moet de algemene voorwaarden accepteren om door te gaan.");
+        return { success: false, error: new Error("Terms not accepted") };
+      }
+
       const credential = await createUserWithEmailAndPassword(auth, email, password);
 
       // Create MongoDB user
       try {
-        const mongoUserData = await userService.createUser();
+        const mongoUserData = await userService.createUser({ hasAcceptedTerms: acceptedTerms });
         setMongoUser(mongoUserData);
       } catch (mongoError) {
         console.error("Error creating MongoDB user:", mongoError);
@@ -55,11 +66,7 @@ export function AuthProvider({ children }) {
       return { success: true, user: credential.user };
     } catch (error) {
       console.error("Signup error:", error);
-      setError(
-        error.code === "auth/email-already-in-use"
-          ? "Dit e-mailadres is al in gebruik"
-          : "Er is een fout opgetreden bij het registreren"
-      );
+      setError(getFirebaseErrorMessage(error.code));
       return { success: false, error };
     }
   }
@@ -67,6 +74,12 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     try {
       setError("");
+
+      if (!email || !password) {
+        setError("Vul je e-mailadres en wachtwoord in.");
+        return { success: false, error: new Error("Missing credentials") };
+      }
+
       const credential = await signInWithEmailAndPassword(auth, email, password);
 
       // Get MongoDB user
@@ -81,11 +94,7 @@ export function AuthProvider({ children }) {
       return { success: true, user: credential.user };
     } catch (error) {
       console.error("Login error:", error);
-      setError(
-        error.code === "auth/invalid-credential"
-          ? "Ongeldige e-mail of wachtwoord"
-          : "Er is een fout opgetreden bij het inloggen"
-      );
+      setError(getFirebaseErrorMessage(error.code));
       return { success: false, error };
     }
   }
@@ -124,10 +133,63 @@ export function AuthProvider({ children }) {
       return { success: true, user: result.user };
     } catch (error) {
       console.error(`${providerName} sign in error:`, error);
-      setError(`Er is een fout opgetreden bij het inloggen met ${providerName}`);
+      setError(getFirebaseErrorMessage(error.code));
       return { success: false, error };
     }
   }
+
+  // Add this function inside the AuthProvider component
+  const getFirebaseErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      // Email/Password Authentication Errors
+      case "auth/email-already-in-use":
+        return "Dit e-mailadres is al in gebruik. Log in of gebruik een ander e-mailadres.";
+      case "auth/invalid-email":
+        return "Ongeldig e-mailadres. Controleer je invoer.";
+      case "auth/user-disabled":
+        return "Dit account is uitgeschakeld. Neem contact op met de beheerder.";
+      case "auth/user-not-found":
+        return "Geen account gevonden met dit e-mailadres.";
+      case "auth/wrong-password":
+        return "Onjuist wachtwoord. Probeer het opnieuw.";
+      case "auth/invalid-credential":
+        return "Ongeldige inloggegevens. Controleer je e-mail en wachtwoord.";
+      case "auth/weak-password":
+        return "Je wachtwoord is te zwak. Kies een sterker wachtwoord.";
+      case "auth/too-many-requests":
+        return "Te veel inlogpogingen. Probeer het later nog eens.";
+      case "auth/missing-password":
+        return "Voer een wachtwoord in.";
+
+      // OAuth Provider Errors
+      case "auth/account-exists-with-different-credential":
+        return "Er bestaat al een account met dit e-mailadres maar met een andere inlogmethode.";
+      case "auth/popup-closed-by-user":
+        return "Inlogproces afgebroken. Probeer het opnieuw.";
+      case "auth/cancelled-popup-request":
+        return "Inlogproces afgebroken. Probeer het opnieuw.";
+      case "auth/popup-blocked":
+        return "Pop-up geblokkeerd door je browser. Sta pop-ups toe en probeer het opnieuw.";
+      case "auth/operation-not-allowed":
+        return "Deze inlogmethode is momenteel niet beschikbaar. Probeer een andere methode.";
+      case "auth/provider-already-linked":
+        return "Dit account is al gekoppeld aan een andere inlogmethode.";
+
+      // Network Errors
+      case "auth/network-request-failed":
+        return "Netwerkfout. Controleer je internetverbinding en probeer het opnieuw.";
+
+      // General Errors
+      case "auth/internal-error":
+        return "Er is een interne fout opgetreden. Probeer het later opnieuw.";
+      case "auth/invalid-api-key":
+        return "Ongeldige API-sleutel. Neem contact op met de beheerder.";
+      case "auth/app-deleted":
+        return "Deze app is niet meer beschikbaar. Neem contact op met de beheerder.";
+      default:
+        return "Er is een fout opgetreden. Probeer het opnieuw.";
+    }
+  };
 
   function logout() {
     setMongoUser(null);

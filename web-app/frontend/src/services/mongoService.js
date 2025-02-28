@@ -29,8 +29,8 @@ api.interceptors.request.use(
 // User services
 export const userService = {
   // Create or update user in MongoDB after Firebase auth
-  createUser: async (hasAcceptedTerms = false) => {
-    const response = await api.post("/users", { hasAcceptedTerms });
+  createUser: async (userData = {}) => {
+    const response = await api.post("/users", userData);
     return response.data;
   },
 

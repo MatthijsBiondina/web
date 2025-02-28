@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 */
 
 // react-router-dom components
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -46,12 +46,18 @@ import { useAuth } from "contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { updateProfile } from "firebase/auth";
 
+// Email validation
+import validator from "validator";
+
 function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const emailInputRef = useRef(null);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const passwordInputRef = useRef(null);
+  const passwordConfirmInputRef = useRef(null);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const termsCheckboxRef = useRef(null);
   const [success, setSuccess] = useState("");
@@ -61,15 +67,25 @@ function SignUp() {
   const { currentUser, signup, loginWithProvider, error, setError } = useAuth();
   const navigate = useNavigate();
 
-  if (currentUser) {
-    return <Navigate to="/portaal" replace />;
-  }
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/portaal", { replace: true });
+    }
+  }, [currentUser, navigate]);
+
+  // ** EMAIL + PASSWORD SIGNUP ***
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password || !passwordConfirm) {
       setError("Vul alle velden in");
+      setOpenAlert(true);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError(passwordError);
       setOpenAlert(true);
       return;
     }
@@ -112,6 +128,69 @@ function SignUp() {
     }
   };
 
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    if (emailInputRef.current) {
+      if (!value) {
+        emailInputRef.current.setCustomValidity("Vul je e-mailadres in.");
+      } else if (!validator.isEmail(value)) {
+        emailInputRef.current.setCustomValidity("Vul een geldig e-mailadres in.");
+      } else {
+        emailInputRef.current.setCustomValidity("");
+      }
+    }
+  };
+
+  const validatePassword = (value) => {
+    if (!value) {
+      setPasswordError("Vul een wachtwoord in.");
+      return false;
+    } else if (value.length < 8) {
+      setPasswordError("Wachtwoord moet minimaal 8 tekens lang zijn.");
+      return false;
+    }
+
+    setPasswordError("");
+    return true;
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+
+    if (passwordInputRef.current) {
+      if (!validatePassword(value)) {
+        passwordInputRef.current.setCustomValidity(passwordError);
+      } else {
+        passwordInputRef.current.setCustomValidity("");
+      }
+    }
+
+    // If confirmation password is already entered, check match
+    if (value != passwordConfirm) {
+      passwordConfirmInputRef.current.setCustomValidity("Wachtwoorden komen niet overeen.");
+    } else {
+      passwordConfirmInputRef.current.setCustomValidity("");
+    }
+  };
+
+  const handlePasswordConfirmChange = (e) => {
+    const value = e.target.value;
+    setPasswordConfirm(value);
+
+    if (passwordConfirmInputRef.current) {
+      if (value !== password) {
+        passwordConfirmInputRef.current.setCustomValidity("Wachtwoorden komen niet overeen.");
+      } else {
+        passwordConfirmInputRef.current.setCustomValidity("");
+      }
+    }
+  };
+
+  // *** TERMS CHECKBOX ***
+
   const handleCheckboxClick = () => {
     if (!hasAcceptedTerms) {
       setHasAcceptedTerms(true);
@@ -137,13 +216,7 @@ function SignUp() {
     }
   };
 
-  useEffect(() => {
-    if (termsCheckboxRef.current) {
-      termsCheckboxRef.current.setCustomValidity(
-        "Je moet de algemene voorwaarden accepteren om door te gaan."
-      );
-    }
-  }, []);
+  // *** PROVIDER SIGNIN ***
 
   const handleProviderSignIn = async (providerName, displayName) => {
     try {
@@ -163,9 +236,31 @@ function SignUp() {
     }
   };
 
+  // *** ALERT ***
+
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
+
+  // *** MOUNT ***
+  useEffect(() => {
+    if (emailInputRef.current) {
+      if (emailInputRef.current) {
+        emailInputRef.current.setCustomValidity("Vul een e-mailadres in.");
+      }
+    }
+    if (termsCheckboxRef.current) {
+      termsCheckboxRef.current.setCustomValidity(
+        "Je moet de algemene voorwaarden accepteren om door te gaan."
+      );
+    }
+    if (passwordInputRef.current) {
+      passwordInputRef.current.setCustomValidity("Vul een wachtwoord in.");
+    }
+    if (passwordConfirmInputRef.current) {
+      passwordConfirmInputRef.current.setCustomValidity("Bevestig je wachtwoord.");
+    }
+  }, []);
 
   return (
     <BasicLayout image={bgImage}>
@@ -246,8 +341,19 @@ function SignUp() {
                 label="E-mail"
                 fullWidth
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
+                inputRef={emailInputRef}
                 required
+                inputProps={{
+                  "aria-label": "E-mail",
+                  onInvalid: (e) => {
+                    if (!email) {
+                      e.target.setCustomValidity("Vul een e-mailadres in.");
+                    } else {
+                      e.target.setCustomValidity("Vul een geldig e-mailadres in.");
+                    }
+                  },
+                }}
               />
             </MKBox>
             <MKBox mb={2}>
@@ -256,9 +362,26 @@ function SignUp() {
                 label="Wachtwoord"
                 fullWidth
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
+                inputRef={passwordInputRef}
                 required
+                error={!!passwordError}
+                inputProps={{
+                  "aria-label": "Wachtwoord",
+                  onInvalid: (e) => {
+                    if (!password) {
+                      e.target.setCustomValidity("Vul een wachtwoord in.");
+                    } else {
+                      e.target.setCustomValidity(passwordError);
+                    }
+                  },
+                }}
               />
+              {passwordError && (
+                <MKTypography variant="caption" color="error">
+                  {passwordError}
+                </MKTypography>
+              )}
             </MKBox>
             <MKBox mb={2}>
               <MKInput
@@ -266,9 +389,26 @@ function SignUp() {
                 label="Bevestig Wachtwoord"
                 fullWidth
                 value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
+                onChange={handlePasswordConfirmChange}
+                inputRef={passwordConfirmInputRef}
                 required
+                error={password !== passwordConfirm && passwordConfirm !== ""}
+                inputProps={{
+                  "aria-label": "Bevestig Wachtwoord",
+                  onInvalid: (e) => {
+                    if (!passwordConfirm) {
+                      e.target.setCustomValidity("Bevestig je wachtwoord.");
+                    } else if (password !== passwordConfirm) {
+                      e.target.setCustomValidity("Wachtwoorden komen niet overeen.");
+                    }
+                  },
+                }}
               />
+              {password !== passwordConfirm && passwordConfirm !== "" && (
+                <MKTypography variant="caption" color="error">
+                  Wachtwoorden komen niet overeen.
+                </MKTypography>
+              )}
             </MKBox>
             <MKBox display="flex" alignItems="center" ml={-1}>
               <Checkbox
