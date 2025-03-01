@@ -35,6 +35,8 @@ import SignUpPage from "layouts/authentication/sign-up";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "components/PrivateRoute";
 import SignOutPage from "layouts/authentication/sign-out";
+import PrivacyPage from "layouts/pages/support/privacy";
+import TermsPage from "layouts/pages/support/terms";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -45,28 +47,17 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
-      if (route.collapse) {
-        return getRoutes(route.collapse);
-      }
-
-      if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
-      }
-
-      return null;
-    });
-
   return (
     <AuthProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
-          {getRoutes(routes)}
-
           {/* Landing Pages */}
           <Route path="/home" element={<HomePage />} />
+
+          {/* Support Pages */}
+          <Route path="/privacybeleid" element={<PrivacyPage />} />
+          <Route path="/algemene-voorwaarden" element={<TermsPage />} />
 
           {/* Authenticatie */}
           <Route path="/authenticatie">

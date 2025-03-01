@@ -13,7 +13,8 @@ function useSignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [hasAcceptedTerms, setHasAcceptedTerms] = useState("");
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [hasAcceptedPrivacy, setHasAcceptedPrivacy] = useState(false);
 
   // Form errors and status
   const [passwordError, setPasswordError] = useState("");
@@ -26,6 +27,7 @@ function useSignUpForm() {
   const passwordInputRef = useRef(null);
   const passwordConfirmInputRef = useRef(null);
   const termsCheckboxRef = useRef(null);
+  const privacyCheckboxRef = useRef(null);
 
   // Auth context and navigation
   const { signup, error, setError } = useAuth();
@@ -97,6 +99,37 @@ function useSignUpForm() {
     }
   };
 
+  // Privacy checkbox handler
+  const handlePrivacyChange = (e) => {
+    const isChecked = e.target.checked;
+    setHasAcceptedPrivacy(isChecked);
+
+    // Update validation message
+    if (privacyCheckboxRef.current) {
+      if (isChecked) {
+        privacyCheckboxRef.current.setCustomValidity("");
+      } else {
+        privacyCheckboxRef.current.setCustomValidity(
+          "Je moet het privacybeleid accepteren om door te gaan."
+        );
+      }
+    }
+  };
+
+  const handlePrivacyClick = () => {
+    setHasAcceptedPrivacy(!hasAcceptedPrivacy);
+
+    if (privacyCheckboxRef.current) {
+      if (!hasAcceptedPrivacy) {
+        privacyCheckboxRef.current.setCustomValidity("");
+      } else {
+        privacyCheckboxRef.current.setCustomValidity(
+          "Je moet het privacybeleid accepteren om door te gaan."
+        );
+      }
+    }
+  };
+
   // Terms checkbox handler
   const handleTermsChange = (e) => {
     const isChecked = e.target.checked;
@@ -151,6 +184,12 @@ function useSignUpForm() {
       return;
     }
 
+    if (!hasAcceptedPrivacy) {
+      setError("Je moet het privacybeleid accepteren om door te gaan.");
+      setOpenAlert(true);
+      return;
+    }
+
     if (!hasAcceptedTerms) {
       setError("Je moet de algemene voorwaarden accepteren om door te gaan.");
       setOpenAlert(true);
@@ -160,7 +199,7 @@ function useSignUpForm() {
     // Submit form
     try {
       setLoading(true);
-      const result = await signup(email, password, hasAcceptedTerms);
+      const result = await signup(email, password, hasAcceptedTerms && hasAcceptedPrivacy);
 
       if (result.success) {
         setSuccess("Account succesvol aangemaakt.");
@@ -213,6 +252,7 @@ function useSignUpForm() {
       setPassword,
       passwordConfirm,
       setPasswordConfirm,
+      hasAcceptedPrivacy,
       hasAcceptedTerms,
       setHasAcceptedTerms,
       error,
@@ -226,6 +266,7 @@ function useSignUpForm() {
       emailInputRef,
       passwordInputRef,
       passwordConfirmInputRef,
+      privacyCheckboxRef,
       termsCheckboxRef,
     },
 
@@ -247,6 +288,8 @@ function useSignUpForm() {
     handleEmailChange,
     handlePasswordChange,
     handlePasswordConfirmChange,
+    handlePrivacyChange,
+    handlePrivacyClick,
     handleTermsChange,
     handleTermsClick,
     handleSubmit,

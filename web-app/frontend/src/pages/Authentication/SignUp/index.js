@@ -37,6 +37,8 @@ function SignUp() {
     handleEmailChange,
     handlePasswordChange,
     handlePasswordConfirmChange,
+    handlePrivacyChange,
+    handlePrivacyClick,
     handleTermsChange,
     handleTermsClick,
   } = useSignUpForm();
@@ -101,6 +103,8 @@ function SignUp() {
             handleEmailChange={handleEmailChange}
             handlePasswordChange={handlePasswordChange}
             handlePasswordConfirmChange={handlePasswordConfirmChange}
+            handlePrivacyChange={handlePrivacyChange}
+            handlePrivacyClick={handlePrivacyClick}
             handleTermsChange={handleTermsChange}
             handleTermsClick={handleTermsClick}
           />

@@ -80,8 +80,8 @@ export default {
   },
 
   dark: {
-    main: "#344767",
-    focus: "#2c3c58",
+    main: "#4D4D5A",
+    focus: "#322D31",
   },
 
   grey: {
@@ -133,7 +133,7 @@ export default {
     },
 
     dark: {
-      main: "#42424a",
+      main: "#4D4D5A",
       state: "#191919",
     },
   },
@@ -212,8 +212,8 @@ export default {
     },
 
     info: {
-      background: "#aecef7",
-      text: "#095bc6",
+      background: "#91B38F",
+      text: "#2E3426",
     },
 
     success: {
@@ -237,8 +237,8 @@ export default {
     },
 
     dark: {
-      background: "#8097bf",
-      text: "#1e2e4a",
+      background: "#8C8CA3",
+      text: "#191919",
     },
   },
 
@@ -250,7 +250,7 @@ export default {
     warning: "#ff9900",
     error: "#f44336",
     light: "#adb5bd",
-    dark: "#404040",
+    dark: "#4D4D5A",
   },
 
   inputBorderColor: "#d2d6da",

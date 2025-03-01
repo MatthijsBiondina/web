@@ -26,12 +26,20 @@ function SignUpForm({
   handleEmailChange,
   handlePasswordChange,
   handlePasswordConfirmChange,
+  handlePrivacyChange,
+  handlePrivacyClick,
   handleTermsChange,
   handleTermsClick,
 }) {
-  const { name, setName, email, password, passwordConfirm, hasAcceptedTerms } = formValues;
-  const { emailInputRef, passwordInputRef, passwordConfirmInputRef, termsCheckboxRef } =
-    formRefs || {};
+  const { name, setName, email, password, passwordConfirm, hasAcceptedPrivacy, hasAcceptedTerms } =
+    formValues;
+  const {
+    emailInputRef,
+    passwordInputRef,
+    passwordConfirmInputRef,
+    privacyCheckboxRef,
+    termsCheckboxRef,
+  } = formRefs || {};
 
   return (
     <MKBox component="form" role="form" onSubmit={onSubmit}>
@@ -82,11 +90,15 @@ function SignUpForm({
 
       {/* Terms checkbox */}
       <TermsCheckbox
-        checked={hasAcceptedTerms}
-        onChange={handleTermsChange}
-        onClick={handleTermsClick}
+        privacyChecked={hasAcceptedPrivacy}
+        onPrivacyChange={handlePrivacyChange}
+        onPrivacyClick={handlePrivacyClick}
+        termsChecked={hasAcceptedTerms}
+        onTermsChange={handleTermsChange}
+        onTermsClick={handleTermsClick}
         required
-        inputRef={termsCheckboxRef}
+        privacyInputRef={privacyCheckboxRef}
+        termsInputRef={termsCheckboxRef}
       />
 
       {/* Submit button */}
@@ -125,6 +137,7 @@ SignUpForm.propTypes = {
     email: PropTypes.string,
     password: PropTypes.string,
     passwordConfirm: PropTypes.string,
+    hasAcceptedPrivacy: PropTypes.bool,
     hasAcceptedTerms: PropTypes.bool,
   }).isRequired,
   formErrors: PropTypes.shape({
@@ -141,7 +154,10 @@ SignUpForm.propTypes = {
   handleEmailChange: PropTypes.func,
   handlePasswordChange: PropTypes.func,
   handlePasswordConfirmChange: PropTypes.func,
+  handlePrivacyChange: PropTypes.func,
+  handlePrivacyClick: PropTypes.func,
   handleTermsChange: PropTypes.func,
+  handleTermsClick: PropTypes.func,
 };
 
 // Default props
