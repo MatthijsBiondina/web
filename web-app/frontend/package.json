@@ -50,6 +50,7 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
+    "debug": "BROWSER=none react-scripts --inspect=0.0.0.0:9229 start",
     "lint": "eslint ./src",
     "prettify": "prettier --write ."
   },
