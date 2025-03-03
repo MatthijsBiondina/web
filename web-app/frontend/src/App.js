@@ -28,7 +28,6 @@ import theme from "assets/theme";
 import HomePage from "layouts/pages/landing-pages/home";
 
 // Material Kit 2 PRO React routes
-import routes from "routes";
 import PortalOverviewPage from "layouts/pages/portal/overview";
 import SignInPage from "layouts/authentication/sign-in";
 import SignUpPage from "layouts/authentication/sign-up";
@@ -37,6 +36,12 @@ import PrivateRoute from "components/PrivateRoute";
 import SignOutPage from "layouts/authentication/sign-out";
 import PrivacyPage from "layouts/pages/support/privacy";
 import TermsPage from "layouts/pages/support/terms";
+import TermsFormPage from "layouts/pages/portal/terms-acceptance";
+import TermsRequiredRoute from "components/TermsRequiredRoute";
+import EmailVerificationRequiredRoute from "components/EmailVerifiedRoute";
+import EmailVerificationPage from "layouts/authorization/email-verification";
+import LoadingScreen from "layouts/authorization/loading";
+import MongoUserLoadedRoute from "components/MongoUserLoadedRoute";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -67,14 +72,50 @@ export default function App() {
             <Route path="*" element={<Navigate to="/authenticatie/inloggen" replace />} />
           </Route>
 
+          {/* Terms acceptance page - requires authentication */}
+          <Route
+            path="/portaal/voorwaarden"
+            element={
+              <PrivateRoute>
+                <TermsFormPage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/authorizatie/laadscherm"
+            element={
+              <PrivateRoute>
+                <LoadingScreen />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/authorizatie/email-verificatie"
+            element={
+              <PrivateRoute>
+                <EmailVerificationPage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Authorization routes. */}
+
           {/* Accessing portal requires authentication */}
           <Route
             path="/portaal"
             element={
               <PrivateRoute>
-                <Routes>
-                  <Route path="*" element={<PortalOverviewPage />} />
-                </Routes>
+                <MongoUserLoadedRoute>
+                  <TermsRequiredRoute>
+                    <EmailVerificationRequiredRoute>
+                      <Routes>
+                        <Route path="*" element={<PortalOverviewPage />} />
+                      </Routes>
+                    </EmailVerificationRequiredRoute>
+                  </TermsRequiredRoute>
+                </MongoUserLoadedRoute>
               </PrivateRoute>
             }
           />

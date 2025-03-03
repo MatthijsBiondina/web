@@ -53,6 +53,7 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
 // Update user profile
 router.put("/profile", verifyFirebaseToken, async (req, res) => {
   try {
+    
     const updates = req.body;
     // Prevent updating sensitive fields
     delete updates.uid;

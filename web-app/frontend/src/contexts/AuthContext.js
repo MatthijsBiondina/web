@@ -9,6 +9,7 @@ import {
   FacebookAuthProvider,
   OAuthProvider,
   signInWithPopup,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import { userService } from "services/mongoService";
@@ -54,6 +55,14 @@ export function AuthProvider({ children }) {
       }
 
       const credential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Send email verification
+      try {
+        await sendEmailVerification(credential.user);
+      } catch (verificationError) {
+        console.error("Error sending verification email:", verificationError);
+        // Continue with signup process even if email verification fails
+      }
 
       // Create MongoDB user
       try {
@@ -196,6 +205,42 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   }
 
+  // Send email verification function
+  async function sendVerificiationEmail() {
+    if (!currentUser) {
+      setError("Geen gebruiker ingelogd.");
+      return { success: false, error: new Error("No user logged in.") };
+    }
+
+    try {
+      await sendEmailVerification(currentUser);
+      return { success: true };
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      setError(
+        getFirebaseErrorMessage(error.code) || "Fout bij het verzenden van verificatie e-mail"
+      );
+      return { success: false, error };
+    }
+  }
+
+  // Reload user to check verification status
+  async function reloadUser() {
+    if (!currentUser) {
+      return { success: false, error: new Error("No user logged in") };
+    }
+
+    try {
+      await currentUser.reload();
+      // Update the current user with the fresh data
+      setCurrentUser(auth.currentUser);
+      return { success: true, emailVerified: auth.currentUser.emailVerified };
+    } catch (error) {
+      console.error("Error reloading user:", error);
+      return { success: false, error };
+    }
+  }
+
   // Update user profile in MongoDB
   async function updateProfile(userData) {
     try {
@@ -239,6 +284,8 @@ export function AuthProvider({ children }) {
     loginWithProvider,
     logout,
     updateProfile,
+    sendVerificiationEmail,
+    reloadUser,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

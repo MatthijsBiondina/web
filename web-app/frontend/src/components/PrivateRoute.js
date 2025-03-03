@@ -1,3 +1,7 @@
+/**
+ * Private route
+ */
+
 import React from "react";
 import PropTypes from "prop-types";
 import { Navigate } from "react-router-dom";

@@ -234,6 +234,11 @@ function useSignUpForm() {
     if (passwordConfirmInputRef.current) {
       passwordConfirmInputRef.current.setCustomValidity("Bevestig je wachtwoord.");
     }
+    if (privacyCheckboxRef.current) {
+      privacyCheckboxRef.current.setCustomValidity(
+        "Je moet het privacybeleid accepteren om door te gaan."
+      );
+    }
     if (termsCheckboxRef.current) {
       termsCheckboxRef.current.setCustomValidity(
         "Je moet de algemene voorwaarden accepteren om door te gaan."
@@ -253,6 +258,7 @@ function useSignUpForm() {
       passwordConfirm,
       setPasswordConfirm,
       hasAcceptedPrivacy,
+      setHasAcceptedPrivacy,
       hasAcceptedTerms,
       setHasAcceptedTerms,
       error,
@@ -293,7 +299,7 @@ function useSignUpForm() {
     handleTermsChange,
     handleTermsClick,
     handleSubmit,
-    closeAlert: handleCloseAlert,
+    closeAlert: handleCloseAlert, // todo: why?
   };
 }
 

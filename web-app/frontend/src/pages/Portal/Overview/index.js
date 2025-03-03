@@ -39,17 +39,7 @@ import portalRoutes from "routes/portal-routes";
 function PortalOverview() {
   return (
     <>
-      <DefaultNavbar
-        routes={portalRoutes}
-        // action={{
-        //   type: "external",
-        //   route: "https://www.creative-tim.com/product/material-kit-pro-react",
-        //   label: "buy now",
-        //   color: "info",
-        // }}
-        transparent
-        light
-      />
+      <DefaultNavbar routes={portalRoutes} />
       <MKBox
         minHeight="50vh"
         width="100%"

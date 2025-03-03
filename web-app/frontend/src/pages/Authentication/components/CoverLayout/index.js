@@ -28,22 +28,13 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import SimpleFooter from "examples/Footers/SimpleFooter";
 
 // Material kit 2 PRO React page layout routes
-import routes from "routes";
+import portalRoutes from "routes/portal-routes";
 
 function CoverLayout({ coverHeight = "35vh", image, children }) {
   return (
     <MKBox height="calc(100vh - 1rem)">
       <MKBox width="100%" position="absolute" top="0.25rem">
-        <DefaultNavbar
-          routes={routes}
-          action={{
-            type: "external",
-            route: "https://www.creative-tim.com/product/material-kit-pro-react",
-            label: "buy now",
-          }}
-          transparent
-          light
-        />
+        <DefaultNavbar routes={portalRoutes} transparent light />
       </MKBox>
       <MKBox
         width="calc(100% - 2rem)"
