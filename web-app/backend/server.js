@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const admin = require("firebase-admin");
-const axios = require("axios"); // Add this package to fetch IP
+const axios = require("axios");
 
 dotenv.config();
 const app = express();
@@ -18,19 +18,30 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-// Function to get public IP address
-async function getPublicIpAddress() {
-  try {
-    // Using ipify API to get the public IP
-    const response = await axios.get("https://api.ipify.org?format=json");
-    return response.data.ip;
-  } catch (error) {
-    console.error("Error fetching public IP:", error.message);
-    return "Unable to determine IP";
-  }
-}
+// IMPORTANT: Add test endpoints at root level for debugging
+app.get("/", (req, res) => {
+  console.log("Root endpoint hit");
+  res.status(200).send("Backend server is running");
+});
 
-// MongoDB connection with enhanced diagnostics
+app.get("/health", (req, res) => {
+  console.log("Health check received");
+  res.status(200).send("OK");
+});
+
+// Import routes
+const userRoutes = require("./routes/users");
+
+// Debug middleware for user routes
+app.use("/users", (req, res, next) => {
+  console.log(`Request received at /api/users${req.path}: ${req.method}`);
+  next();
+});
+
+// Mount routes
+app.use("/users", userRoutes);
+
+// MongoDB connection
 const connectToMongoDB = async () => {
   try {
     console.log(
@@ -39,11 +50,10 @@ const connectToMongoDB = async () => {
       }`
     );
 
-    // Set more explicit connection options
     const mongooseOptions = {
-      serverSelectionTimeoutMS: 15000, // 15 seconds
-      socketTimeoutMS: 45000, // 45 seconds
-      family: 4, // Force IPv4
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      family: 4,
       retryWrites: true,
       w: "majority",
     };
@@ -51,74 +61,31 @@ const connectToMongoDB = async () => {
     await mongoose.connect(process.env.MONGODB_URI, mongooseOptions);
     console.log("Successfully connected to MongoDB");
 
-    // Print database information as a further connection test
     const adminDb = mongoose.connection.db.admin();
     const serverInfo = await adminDb.serverInfo();
     console.log(`Connected to MongoDB version: ${serverInfo.version}`);
 
     return true;
   } catch (err) {
-    const publicIp = await getPublicIpAddress();
-    console.error(
-      `Could not connect to MongoDB. Your current public IP address is: ${publicIp}`
-    );
-
-    // Check if it's an IP whitelist error specifically
-    if (err.message && err.message.includes("IP whitelist")) {
-      console.error(
-        `This IP address should be covered by your 185.132.187.0/24 whitelist entry.`
-      );
-      console.error(`Please verify the whitelist is active in MongoDB Atlas.`);
-    }
-
-    // Additional diagnostics
-    console.error(`Connection error type: ${err.name}`);
-    console.error(`Connection error code: ${err.code || "N/A"}`);
-    console.error(`Detailed error message: ${err.message}`);
-
-    // Attempt a basic network test to the MongoDB servers
-    try {
-      const mongoHost = process.env.MONGODB_URI.split("@")[1]
-        .split("/")[0]
-        .split(":")[0];
-      console.log(`Testing network connectivity to ${mongoHost}...`);
-      const dnsResult = await new Promise((resolve) => {
-        require("dns").lookup(mongoHost, (err, address) => {
-          if (err) {
-            resolve(`DNS lookup failed: ${err.message}`);
-          } else {
-            resolve(`DNS resolved to ${address}`);
-          }
-        });
-      });
-      console.log(dnsResult);
-    } catch (netErr) {
-      console.error(`Network test failed: ${netErr.message}`);
-    }
-
-    console.error(`Full error details:`, err);
+    console.error(`MongoDB connection error: ${err.message}`);
     return false;
   }
 };
 
-// Connect to MongoDB with enhanced diagnostics
-console.log(process.env.MONGODB_URI);
-connectToMongoDB().then((connected) => {
-  if (connected) {
-    // Import routes
-    const userRoutes = require("./routes/users");
-    // Use routes
-    app.use("/api/users", userRoutes);
+// Start server regardless of MongoDB connection
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 
-    // Start server only if MongoDB connection successful
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  } else {
-    console.log("Application continuing with MongoDB connection failed");
-    // Still start the server even if MongoDB connection failed
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT} (MongoDB connection failed)`)
-    );
-  }
+  // Try to connect to MongoDB after server has started
+  connectToMongoDB().then((connected) => {
+    if (connected) {
+      console.log("Server is fully operational with MongoDB connection");
+    } else {
+      console.error("Server startup aborted due to MongoDB connection failure");
+      process.exit(1); // Exit with failure code
+    }
+  });
 });
+
+module.exports = app;

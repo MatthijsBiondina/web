@@ -4,14 +4,13 @@ import { auth } from "../firebase";
 // eslint-disable-next-line no-undef
 const API_URL = process.env.REACT_APP_API_URL;
 
-console.log(API_URL);
-
 // Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 10000,
 });
 
 // Add auth token to requests
@@ -29,10 +28,36 @@ api.interceptors.request.use(
   }
 );
 
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log(
+      `[API] Request successful: ${response.config.method.toUpperCase()} ${response.config.url}`
+    );
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      console.error(
+        `[API ERROR] ${error.config.method.toUpperCase()} ${error.config.url} - ${
+          error.response.status
+        }`,
+        error.response.data
+      );
+    } else if (error.request) {
+      console.error(`[API ERROR] No response received`, error.request);
+    } else {
+      console.error(`[API ERROR] ${error.message}`);
+    }
+    return Promise.reject(error);
+  }
+);
+
 // User services
 export const userService = {
   // Create or update user in MongoDB after Firebase auth
   createUser: async (userData = {}) => {
+    console.log("API_URL: ", API_URL);
     const response = await api.post("/users", userData);
     return response.data;
   },

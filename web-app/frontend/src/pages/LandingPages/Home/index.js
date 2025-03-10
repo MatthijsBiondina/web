@@ -91,7 +91,7 @@ function Home() {
                 },
               })}
             >
-              Waf
+              Woef
             </MKTypography>
             <MKTypography
               variant="body1"

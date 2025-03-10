@@ -27,6 +27,7 @@ deploy:
     manifests:
     - frontend/k8s/*.yaml
     - backend/k8s/*.yaml
+    - k8s/ingress/*.dev.yaml
 portForward:
   - resourceType: deployment
     resourceName: frontend

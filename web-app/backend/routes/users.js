@@ -38,6 +38,7 @@ router.post("/", verifyFirebaseToken, async (req, res) => {
 // Get current user profile
 router.get("/profile", verifyFirebaseToken, async (req, res) => {
   try {
+    console.log("Hello World!");
     const user = await User.findOne({ uid: req.user.uid });
 
     if (!user) {
@@ -53,7 +54,6 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
 // Update user profile
 router.put("/profile", verifyFirebaseToken, async (req, res) => {
   try {
-    
     const updates = req.body;
     // Prevent updating sensitive fields
     delete updates.uid;
