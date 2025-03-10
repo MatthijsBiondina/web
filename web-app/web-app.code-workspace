@@ -5,19 +5,28 @@
       "path": "."
     },
     {
-      "name": "Frontend",
-      "path": "./frontend"
+      "name": "Customer-Web",
+      "path": "./frontend-services/customer-web"
     },
     {
-      "name": "Backend",
-      "path": "./backend"
+      "name": "Public-Gateway",
+      "path": "./api-gateways/public-gateway"
+    },
+    {
+      "name": "User-Service",
+      "path": "./backend-services/user-service"
     }
   ],
   "settings": {
     "files.exclude": {
-      "frontend/node_modules": true,
-      "backend/node_modules": true
+      "**/node_modules": true,
+      "**/venv": true
     },
+    // "files.exclude": {
+    //   "frontend-services/customer-web/node_modules": true,
+    //   "backend/node_modules": true,
+    //   "backend-services/user-service/venv": true
+    // },
     "editor.formatOnSave": true,
     "javascript.format.enable": true,
     "eslint.workingDirectories": ["./frontend", "./backend"]

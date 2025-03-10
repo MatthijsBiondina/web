@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-web
+  labels:
+    app: customer-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-web
+  template:
+    metadata:
+      labels:
+        app: customer-web
+    spec:
+      containers:
+      - name: customer-web
+        image: customer-web:dev
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_API_URL
+          value: "http://api.minikube.local:8000"
+        - name: NODE_ENV
+          value: "development"
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=2048"
+        - name: CI
+          value: "true"
+        - name: ESLINT_NO_DEV_ERRORS
+          value: "true"
+        - name: CHOKIDAR_USEPOLLING
+          value: "true"
+        - name: FAST_REFRESH
+          value: "true"
+        - name: WDS_SOCKET_PORT
+          value: "3000"
+        - name: WDS_SOCKET_HOST
+          value: "0.0.0.0"
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "2048Mi"
+          requests:
+            cpu: "200m"
+            memory: "1024Mi"

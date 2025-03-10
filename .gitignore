@@ -27,3 +27,7 @@ yarn.lock
 commit.sh
 
 firebase-service-account.json
+
+# Virtual environments
+venv/
+**/venv/
