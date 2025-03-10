@@ -1,0 +1,38 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: web-app
+build:
+  artifacts:
+  - image: frontend
+    context: frontend/
+    docker:
+      dockerfile: docker/Dockerfile.dev
+    sync:
+      manual:
+        - src: "src/**/*.js"
+          dest: "/app"
+        - src: "src/**/*.jsx"
+          dest: "/app"
+        - src: "src/**/*.css"
+          dest: "/app"
+        - src: "src/**/*.scss"
+          dest: "/app"
+  - image: backend
+    context: backend/
+    docker:
+      dockerfile: docker/Dockerfile.dev
+deploy:
+  kubectl:
+    manifests:
+    - frontend/k8s/*.yaml
+    - backend/k8s/*.yaml
+portForward:
+  - resourceType: deployment
+    resourceName: frontend
+    port: 3000
+    localPort: 3000
+  - resourceType: deployment
+    resourceName: backend
+    port: 5000
+    localPort: 5000
