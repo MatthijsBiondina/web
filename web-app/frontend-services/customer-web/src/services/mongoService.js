@@ -88,7 +88,7 @@ api.interceptors.response.use(
 const testConnection = async () => {
   try {
     console.log("Testing connection to API...");
-    await fetch(`${API_URL}/health-check`, {
+    await fetch(`${API_URL}/health`, {
       method: "GET",
       mode: "no-cors",
       cache: "no-cache",

@@ -2,15 +2,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Backend",
-      "type": "node",
+      "name": "Debug Public Gateway (Remote)",
+      "type": "debugpy",
       "request": "attach",
-      "port": 9229,
-      "address": "localhost",
-      "localRoot": "${workspaceFolder}/backend",
-      "remoteRoot": "/app",
-      "restart": true,
-      "skipFiles": ["<node_internals>/**"]
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/api-gateways/public-gateway",
+          "remoteRoot": "/app"
+        }
+      ]
     }
   ]
 }

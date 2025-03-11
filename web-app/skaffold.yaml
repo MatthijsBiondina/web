@@ -38,3 +38,7 @@ portForward:
     resourceName: public-gateway
     port: 8000
     localPort: 8000
+  - resourceType: deployment
+    resourceName: public-gateway
+    port: 5678
+    localPort: 5678
