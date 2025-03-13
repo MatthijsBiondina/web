@@ -1,0 +1,41 @@
+{
+  "folders": [
+    {
+      "name": "Web App (Root)",
+      "path": "."
+    },
+    {
+      "name": "Customer-Web",
+      "path": "./frontend-services/customer-web"
+    },
+    {
+      "name": "Public-Gateway",
+      "path": "./api-gateways/public-gateway"
+    },
+    {
+      "name": "User-Service",
+      "path": "./backend-services/user-service"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/venv": true
+    },
+    // "files.exclude": {
+    //   "frontend-services/customer-web/node_modules": true,
+    //   "backend/node_modules": true,
+    //   "backend-services/user-service/venv": true
+    // },
+    "editor.formatOnSave": true,
+    "javascript.format.enable": true,
+    "eslint.workingDirectories": ["./frontend", "./backend"]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}

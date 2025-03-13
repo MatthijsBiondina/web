@@ -1,0 +1,25 @@
+FROM node:22
+
+WORKDIR /app
+
+# Install Expo CLI globally
+RUN npm install -g expo-cli
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the app
+COPY . .
+
+# Expose the ports that Expo uses
+EXPOSE 19000
+EXPOSE 19001
+EXPOSE 19002
+
+# Start Expo development server
+# The --host 0.0.0.0 flag makes it accessible from outside the container
+# The --dev-client flag enables development client features
+CMD ["npx", "expo", "start", "--dev-client", "--host", "0.0.0.0"]

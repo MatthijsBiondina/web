@@ -31,3 +31,6 @@ firebase-service-account.json
 # Virtual environments
 venv/
 **/venv/
+
+# Secrets
+**/secrets
