@@ -1,0 +1,79 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: web-app
+build:
+  artifacts:
+    - image: customer-web
+      context: frontend-services/customer-web/
+      docker:
+        dockerfile: docker/Dockerfile.dev
+      sync:
+        manual:
+          - src: "src/**/*.js"
+            dest: "/app"
+          - src: "src/**/*.css"
+            dest: "/app"
+    - image: funder-web
+      context: frontend-services/funder-web/
+      docker:
+        dockerfile: docker/Dockerfile.dev
+    - image: users
+      context: backend-services/user-service/
+      docker:
+        dockerfile: docker/Dockerfile.dev
+      sync:
+        manual:
+          - src: "app/**/*.py"
+            dest: "/app"
+    - image: public-gateway
+      context: api-gateways/public-gateway/
+      docker:
+        dockerfile: docker/Dockerfile.dev
+      sync:
+        manual:
+          - src: "app/**/*.py"
+            dest: "/app"
+    - image: authentication
+      context: backend-services/authentication-service/
+      docker:
+        dockerfile: docker/Dockerfile.dev
+      sync:
+        manual:
+          - src: "app/**/*.py"
+            dest: "/app"
+deploy:
+  kubectl:
+    manifests:
+      - frontend-services/customer-web/k8s/*.yaml
+      - frontend-services/funder-web/k8s/*.yaml
+      - api-gateways/public-gateway/k8s/*.yaml
+      - backend-services/user-service/k8s/*.yaml
+      - backend-services/authentication-service/k8s/*.yaml
+      - infrastructure/k8s/ingress/*.dev.yaml
+      - infrastructure/k8s/secrets/*.dev.yaml
+portForward:
+  - resourceType: deployment
+    resourceName: customer-web
+    port: 3000
+    localPort: 3000
+  - resourceType: deployment
+    resourceName: funder-web
+    port: 3000
+    localPort: 3001
+  - resourceType: deployment
+    resourceName: public-gateway
+    port: 8000
+    localPort: 8000
+  - resourceType: deployment
+    resourceName: users
+    port: 5678
+    localPort: 5678
+  - resourceType: deployment
+    resourceName: public-gateway
+    port: 5678
+    localPort: 5679
+  - resourceType: deployment
+    resourceName: authentication
+    port: 5678
+    localPort: 56780

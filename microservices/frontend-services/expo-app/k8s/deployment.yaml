@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expo-app
+  labels:
+    app: expo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expo-app
+  template:
+    metadata:
+      labels:
+        app: expo-app
+    spec:
+      containers:
+      - name: expo-app
+        image: expo-app:dev
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 19000
+          name: expo-app
+        - containerPort: 19001
+          name: expo-bundle
+        - containerPort: 19002
+          name: expo-devtools
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: REACT_NATIVE_PACKAGER_HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"

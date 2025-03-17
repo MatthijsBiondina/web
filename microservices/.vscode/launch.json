@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach authentication",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 56780
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/backend-services/authentication-service",
+          "remoteRoot": "/app"
+        },
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/home/matt/WebDev/web-app"
+        }
+      ]
+    },
+    {
+      "name": "Debug Gateway",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5679
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/api-gateways/public-gateway",
+          "remoteRoot": "/app"
+        },
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/home/matt/WebDev/web-app"
+        }
+      ]
+    },
+    {
+      "name": "Python: Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/infrastructure/tools/visualizer/user_stories.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    }
+  ]
+}

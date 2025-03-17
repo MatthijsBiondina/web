@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: backend:dev
+        ports:
+        - containerPort: 5000
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=1024"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: mongodb_uri
+        resources:
+          limits:
+            cpu: "800m"
+            memory: "1024Mi"
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: firebase-credentials
+          mountPath: "/app/firebase-service-account.json"
+          subPath: "firebase-service-account.json"
+          readOnly: true
+      volumes:
+      - name: firebase-credentials
+        secret:
+          secretName: firebase-credentials
