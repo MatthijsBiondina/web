@@ -2,15 +2,46 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Backend",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "address": "localhost",
-      "localRoot": "${workspaceFolder}/backend",
-      "remoteRoot": "/app",
-      "restart": true,
-      "skipFiles": ["<node_internals>/**"]
+      "name": "Backend: FastAPI",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "backend.app.main:app",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/backend",
+          "remoteRoot": "${workspaceFolder}/backend"
+        }
+      ]
+    },
+    {
+      "name": "Frontend: React",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/src/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: Backend + Frontend",
+      "configurations": ["Backend: FastAPI", "Frontend: React"]
     }
   ]
 }
