@@ -13,4 +13,4 @@ docker run -p 5000:5000 -p 5678:5678 \
   -e PYDEVD_DISABLE_FILE_VALIDATION=1 \
   --name web-app-backend \
   --rm \
-  web-app-backend python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
+  web-app-backend python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload

@@ -19,6 +19,7 @@ api.interceptors.request.use(
       const token = await user.getIdToken();
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log(config.headers);
     return config;
   },
   (error) => {
