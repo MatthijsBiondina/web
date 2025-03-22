@@ -12,6 +12,5 @@ services:
       - env/.env.dev
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true  # Enables hot reloading inside Docker
     stdin_open: true  # Equivalent to -i in docker run
     tty: true  # Equivalent to -t in docker run

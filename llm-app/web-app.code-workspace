@@ -1,0 +1,92 @@
+// llm-app.code-workspace (Root workspace file)
+{
+    "folders": [
+        {
+            "name": "✨ llm-app (root)",
+            "path": "."
+        },
+        {
+            "name": "🖥️ frontend",
+            "path": "frontend"
+        },
+        {
+            "name": "⚙️ backend",
+            "path": "backend"
+        },
+        {
+            "name": "🐳 compose",
+            "path": "compose"
+        },
+        {
+            "name": "📜 scripts",
+            "path": "scripts"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/venv": true,
+            "**/__pycache__": true
+        }
+    }
+}
+
+// frontend.code-workspace (Frontend-specific workspace)
+{
+    "folders": [
+        {
+            "path": "frontend"
+        }
+    ],
+    "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "javascript.format.enable": true,
+        "javascript.validate.enable": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+        },
+        "files.exclude": {
+            "**/node_modules": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "dbaeumer.vscode-eslint",
+            "esbenp.prettier-vscode",
+            "dsznajder.es7-react-js-snippets",
+            "christian-kohler.path-intellisense",
+            "MS-vsliveshare.vsliveshare"
+        ]
+    }
+}
+
+// backend.code-workspace (Backend-specific workspace)
+{
+    "folders": [
+        {
+            "path": "backend"
+        }
+    ],
+    "settings": {
+        "editor.formatOnSave": true,
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.pylintEnabled": false,
+        "files.exclude": {
+            "**/venv": true,
+            "**/__pycache__": true,
+            "**/.pytest_cache": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "matangover.mypy",
+            "njpwerner.autodocstring",
+            "MS-vsliveshare.vsliveshare"
+        ]
+    }
+}

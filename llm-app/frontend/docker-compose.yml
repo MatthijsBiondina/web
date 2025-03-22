@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  frontend:
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    ports:
+      - "3000:3000"
+      - "9230:9229"
+    volumes:
+      - .:/app
+      - frontend-node-modules:/app/node_modules
+    env_file:
+      - env/.env.dev
+    environment:
+      - CI=true
+      - ESLINT_NO_DEV_ERRORS=true
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - WDS_SOCKET_PORT=3000
+    command: npm run debug
+    stdin_open: true
+    tty: true
+
+volumes:
+  frontend-node-modules:
