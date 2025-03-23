@@ -9,13 +9,31 @@ import MKTypography from "components/MKTypography";
 import Card from "@mui/material/Card";
 import MKButton from "components/MKButton";
 import Icon from "@mui/material/Icon";
-import { useCreditPrice } from "pages/Portal/BuyCredits/hooks/useCreditPrice";
 import { useSettings } from "hooks/useSettings";
+import { useOneTimeAccessPrice } from "pages/Portal/BuyCredits/hooks/useOneTimeAccessPrice";
+import { apiClient } from "services/apiClient";
 function PricingCard() {
   const { settingValue: currencySymbol, loading: currencySymbolLoading } =
     useSettings("currency-symbol");
-  const { creditPrice, loading: creditPriceLoading } = useCreditPrice("one-time-access");
-  const loading = currencySymbolLoading || creditPriceLoading;
+  const { oneTimeAccessPrice, loading: oneTimeAccessPriceLoading } = useOneTimeAccessPrice();
+  const loading = currencySymbolLoading || oneTimeAccessPriceLoading;
+
+  const handleGetAccess = async () => {
+    try {
+      // Call your backend endpoint
+      const response = await apiClient.post("/orders/one-time-access");
+
+      const data = response.data;
+
+      // Redirect to Mollie payment page
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Payment initiation failed:", error);
+      // Handle error appropriately
+    }
+  };
 
   return (
     <Container>
@@ -44,8 +62,8 @@ function PricingCard() {
                     </MKTypography>
                     <MKTypography variant="body2" color="text" fontWeight="regular">
                       Wil je snel hulp of antwoord op je vragen? Voor slechts {currencySymbol}
-                      {creditPrice} krijg je direct toegang tot een één-op-één chatsessie met onze
-                      chatbot. Geen abonnement nodig, gewoon eenvoudig eenmalig betalen en beginnen.
+                      {oneTimeAccessPrice} krijg je direct toegang tot een één-op-één chatsessie met
+                      onze chatbot. Geen abonnement nodig, gewoon eenmalig betalen en beginnen.
                     </MKTypography>
                     <Grid container item xs={12} lg={3} sx={{ mt: 6, mb: 1 }}>
                       <MKTypography variant="h6">Wat krijg je?</MKTypography>
@@ -86,9 +104,15 @@ function PricingCard() {
                   <MKBox p={3} textAlign="center">
                     <MKTypography variant="h1">
                       <MKBox component="small">{currencySymbol}</MKBox>
-                      {creditPrice}
+                      {oneTimeAccessPrice}
                     </MKTypography>
-                    <MKButton variant="gradient" color="info" size="large" sx={{ my: 2 }}>
+                    <MKButton
+                      variant="gradient"
+                      color="info"
+                      size="large"
+                      sx={{ my: 2 }}
+                      onClick={handleGetAccess}
+                    >
                       Krijg Toegang
                     </MKButton>
                   </MKBox>

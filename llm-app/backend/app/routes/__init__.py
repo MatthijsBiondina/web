@@ -5,6 +5,7 @@ from app.routes.user_routes import router as user_routes
 from app.routes.credit_routes import router as credit_routes
 from app.routes.prices_routes import router as prices_routes
 from app.routes.settings_routes import router as settings_routes
+from app.routes.order_routes import router as order_routes
 
 # Main router that combines all route modules
 router = APIRouter()
@@ -23,3 +24,4 @@ router.include_router(user_routes, prefix="/users", tags=["users"])
 router.include_router(credit_routes, prefix="/credit", tags=["credit"])
 router.include_router(prices_routes, prefix="/prices", tags=["prices"])
 router.include_router(settings_routes, prefix="/settings", tags=["settings"])
+router.include_router(order_routes, prefix="/orders", tags=["orders"])

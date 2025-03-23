@@ -8,4 +8,7 @@ class CreditPriceRequest(SchemaBase):
 class CreditPriceResponse(SchemaBase):
     price: float
     credits: float
-    currency: str
+
+
+class OneTimeAccessPriceResponse(SchemaBase):
+    price: float

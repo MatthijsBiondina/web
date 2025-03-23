@@ -1,5 +1,10 @@
 from app.models.mongo.credit_models import CreditPriceDocument
 from fastapi import HTTPException
+import logging
+from app.models.mongo.user_models import UserDocument
+from app.services.subscription_service import SubscriptionService
+
+logger = logging.getLogger(__name__)
 
 
 class PriceService:
@@ -12,5 +17,23 @@ class PriceService:
         return (
             credit_price.amount_cents / 100,
             credit_price.amount_credits / 100,
-            credit_price.currency_symbol,
         )
+
+    @staticmethod
+    def get_one_time_access_price(user: UserDocument):
+        subscription_level = SubscriptionService.get_subscription_level(user)
+
+        try:
+            product = {
+                "free": "one-time-access",
+                "standard": "one-time-access-discounted",
+            }[subscription_level]
+        except KeyError:
+            logger.warning(
+                f"User {str(user)} has an unknown/unexpected subscription level: {subscription_level}"
+            )
+            product = "one-time-access"
+
+        price, _ = PriceService.get_credit_price(product)
+
+        return price

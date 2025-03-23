@@ -10,7 +10,7 @@ export const useCreditPrice = (product) => {
     const fetchCreditPrice = async () => {
       try {
         const response = await priceService.getCreditPrice(product);
-        console.log(response);
+
         setCreditPrice(response.price);
         setCurrencySymbol(response.currencySymbol);
       } catch (error) {
