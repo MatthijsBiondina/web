@@ -25,7 +25,7 @@ class CreditService:
         try:
             balance = CreditBalanceDocument.objects.get(user=user)
         except CreditBalanceDocument.DoesNotExist:
-            free_credits_on_signup = SettingsService.get_config(
+            free_credits_on_signup = SettingsService.get_setting(
                 "free_credits_on_signup", 0
             )
             balance = CreditBalanceDocument(user=user, amount=free_credits_on_signup)

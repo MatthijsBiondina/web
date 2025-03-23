@@ -4,7 +4,7 @@ from datetime import datetime
 
 class SettingsService:
     @staticmethod
-    def get_config(key: str, default=None):
+    def get_setting(key: str, default=None):
         try:
             config = SettingsDocument.objects.get(key=key)
             return config.get_value()
@@ -12,7 +12,7 @@ class SettingsService:
             return default
 
     @staticmethod
-    def set_config(key: str, value, value_type=None, description=None, group=None):
+    def set_setting(key: str, value, value_type=None, description=None, group=None):
         """Create or update a config"""
         try:
             config = SettingsDocument.objects.get(key=key)

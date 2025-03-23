@@ -7,22 +7,22 @@ import { useNavigate, useLocation } from "react-router-dom";
 import MKBox from "components/MKBox";
 
 // Material Kit 2 PRO React examples
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
+// import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 
 // Custom components
 import ChatSection from "components/MYChatSection"; // Import the new component
 
 // Routes
-import portalRoutes from "routes/portal-routes";
+// import portalRoutes from "routes/portal-routes";
 import footerRoutes from "footer.routes";
 
 // Services
 import { creditService } from "services/creditService";
 
-// Image
-import bgImage from "assets/images/conversation/profile-picture.jpg";
-
+// Components
+import ChatSessionSidebar from "pages/Portal/Conversation/components/ChatSessionSidebar";
+import LoadingScreen from "pages/Portal/Conversation/components/LoadingScreen";
 function Conversation() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ function Conversation() {
 
         if (!creditCheck.sufficient) {
           // Redirect to credits page if insufficient
-          navigate("/portaal/credits-aanschaffen", {
+          navigate("/portaal/eenmalige-toegang", {
             state: {
               from: location.pathname,
               message: "INSUFFICIENT_CREDITS",
@@ -53,35 +53,16 @@ function Conversation() {
   }, [navigate, location]);
 
   if (loading) {
-    return (
-      <MKBox display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        {/* You could add a loading spinner here */}
-        Loading...
-      </MKBox>
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <>
-      <MKBox position="fixed" top="0.5rem" width="100%">
+      {/* <MKBox position="fixed" top="0.5rem" width="100%">
         <DefaultNavbar routes={portalRoutes} />
-      </MKBox>
+      </MKBox> */}
       <Grid container spacing={3} alignItems="center">
-        <Grid item xs={12} lg={6}>
-          <MKBox
-            display={{ xs: "none", lg: "flex" }}
-            width="calc(100% - 2rem)"
-            height="calc(100vh - 2rem)"
-            borderRadius="lg"
-            ml={2}
-            mt={2}
-            sx={{
-              backgroundImage: `url(${bgImage})`,
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-            }}
-          />
-        </Grid>
+        <ChatSessionSidebar />
 
         {/* Chat section is now a separate component */}
         <ChatSection />

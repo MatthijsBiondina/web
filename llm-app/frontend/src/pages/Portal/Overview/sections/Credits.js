@@ -31,7 +31,7 @@ function Credits() {
         <Grid container justifyContent="right">
           <Stack direction="row" alignItems="flex-end" spacing={1}>
             <MKButton variant="outlined" color="info">
-              Credits beschikbaar: {isLoading ? "Loading..." : creditBalance.amount}
+              Tegoed: {isLoading ? "Loading..." : creditBalance.amount}
             </MKButton>
           </Stack>
         </Grid>
