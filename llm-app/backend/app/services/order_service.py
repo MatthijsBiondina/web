@@ -1,13 +1,15 @@
+import datetime
 from http.client import HTTPException
 import os
 import logging
 
+from bson import ObjectId
 import mollie
 from app.models.mongo.user_models import UserDocument
-from app.models.mongo.order_models import OrderDocument
+from app.models.mongo.order_models import OrderDocument, OrderNumberSequence
+from app.models.mongo.credit_models import CreditBalanceDocument, CreditPriceDocument
 from app.services.price_service import PriceService
 from app.services.settings_service import SettingsService
-from app.services.subscription_service import SubscriptionService
 from app.services.mollie_service import MollieService
 
 logger = logging.getLogger(__name__)
@@ -18,32 +20,22 @@ class OrderService:
     def create_one_time_access_order(
         user: UserDocument,
     ):
-        order = OrderDocument.create_order(
-            user=user,
-            amount=PriceService.get_one_time_access_price(user),
-            currency=SettingsService.get_setting("currency"),
-            product=(
-                "one-time-access"
-                if SubscriptionService.get_subscription_level(user) == "free"
-                else "one-time-access-discounted"
-            ),
-        )
-
-        # Get the mollie client from the service
-        mollie_client = MollieService.get_client()
-
-        redirect_url = f"{os.getenv('FRONTEND_URL')}/portaal/betalingsverwerking"
+        amount = PriceService.get_one_time_access_price(user)
+        currency = SettingsService.get_setting("currency")
+        order_number = f"ORD-{OrderNumberSequence.get_next_value():06d}"
+        redirect_url = f"{os.getenv('FRONTEND_URL')}/portaal/chat-sessie"
+        webhook_url = f"{os.getenv('BACKEND_URL')}/api/webhooks/mollie"
 
         try:
-            payment = mollie_client.payments.create(
+            payment = MollieService.get_client().payments.create(
                 {
                     "amount": {
-                        "value": str(order.amount),
-                        "currency": order.currency,
+                        "value": str(amount),
+                        "currency": currency,
                     },
-                    "description": f"Professor Dog - Eenmalige toegang ({order.order_number})",
+                    "description": f"Professor Dog - Eenmalige toegang ({order_number})",
                     "redirectUrl": redirect_url,
-                    "webhookUrl": f"{os.getenv('BACKEND_URL')}/webhooks/mollie",
+                    "webhookUrl": webhook_url,
                 }
             )
         except mollie.api.error.UnprocessableEntityError as e:
@@ -51,4 +43,70 @@ class OrderService:
             logger.error(f"Redirect URL: {redirect_url}")
             raise HTTPException(status_code=500, detail=str(e))
 
+        if not payment["id"]:
+            logger.error(f"Error creating mollie payment: {payment}")
+
+        order = OrderDocument(
+            user=user,
+            order_number=order_number,
+            payment_id=payment["id"],
+            amount=amount,
+            currency=currency,
+            product="one-time-access",
+        )
+        order.save()
+
         return payment.checkout_url
+
+    @staticmethod
+    def process_paid_order(order_id: ObjectId):
+        # Attempt to atomically find and update the order
+        # Only update if it's paid and not yet processed
+        order_update_result = OrderDocument.objects(
+            id=order_id,
+            status="paid",
+            processed=False,
+        ).update_one(
+            set__processed=True,
+            set__updated_at=datetime.datetime.now(),
+        )
+
+        # Check if any document was updated
+        if order_update_result == 0:
+            order_doc = OrderDocument.objects.get(id=order_id)
+            if not order_doc:
+                logger.error(f"Order {order_id} not found")
+                raise HTTPException(status_code=404, detail="Order not found")
+            elif order_doc.processed:
+                logger.error(f"Order {order_id} is already processed")
+                raise HTTPException(
+                    status_code=400, detail="Order is already processed"
+                )
+            else:
+                logger.error(f"Order {order_id} is not paid")
+                raise HTTPException(status_code=400, detail="Order is not paid")
+
+        # If we got here, we successfully claimed the order for processing
+        # Get the order details we need
+        order_doc = OrderDocument.objects.get(id=order_id)
+        product_doc = CreditPriceDocument.objects.get(key=order_doc.product)
+
+        # Atomically update the credit balance
+        credit_update_result = CreditBalanceDocument.objects(
+            user=order_doc.user,
+        ).update_one(
+            inc__amount=product_doc.amount_credits,
+            set__updated_at=datetime.datetime.now(),
+        )
+
+        if credit_update_result == 0:
+            logger.error(
+                f"Failed to update credit balance for user {str(order_doc.user)}"
+            )
+            order_doc.update(
+                set__requires_manual_review=True,
+                set__updated_at=datetime.datetime.now(),
+            )
+            raise HTTPException(
+                status_code=500, detail="Failed to update credit balance"
+            )

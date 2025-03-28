@@ -33,4 +33,4 @@ echo "NGROK_URL=${NGROK_URL}" > env/.env.ngrok
 
 # Start the backend with the ngrok URL available
 echo "Starting backend with NGROK_URL=${NGROK_URL}"
-docker compose up backend
+docker compose up backend --build

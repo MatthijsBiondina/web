@@ -9,10 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenticationMiddleware(BaseHTTPMiddleware):
+    EXEMPTED_PATHS = ["/health", "/docs", "/openapi.json", "/api/webhooks/mollie"]
+
     async def dispatch(self, request: Request, call_next):
 
         # Skip auth for exempted paths
-        if request.url.path in ["/health", "/docs", "/openapi.json"]:
+        if request.url.path in self.EXEMPTED_PATHS:
             return await call_next(request)
         if request.method == "OPTIONS":
             return await call_next(request)

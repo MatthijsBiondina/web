@@ -6,6 +6,7 @@ from mongoengine import (
     FloatField,
     IntField,
     DateTimeField,
+    BooleanField,
 )
 from app.models.mongo.user_models import UserDocument
 from datetime import datetime
@@ -36,21 +37,16 @@ class OrderDocument(Document):
         "failed",
     ]
     order_number = StringField(required=True, unique=True)
+    payment_id = StringField(required=True, unique=True)
     user = ReferenceField(UserDocument, required=True)
     amount = FloatField(required=True)
     currency = StringField(required=True)
     product = StringField(required=True)
 
     status = StringField(required=True, default="open")
+    processed = BooleanField(required=True, default=False)
+    requires_manual_review = BooleanField(required=True, default=False)
     created_at = DateTimeField(required=True, default=datetime.now)
     updated_at = DateTimeField(required=True, default=datetime.now)
 
-    meta = {"collection": "orders", "indexes": ["order_number"]}
-
-    @classmethod
-    def create_order(cls, **kwargs):
-        order_number = f"ORD-{OrderNumberSequence.get_next_value():06d}"
-        order = cls(order_number=order_number, **kwargs)
-        order.save()
-
-        return order
+    meta = {"collection": "orders", "indexes": ["order_number", "payment_id"]}
