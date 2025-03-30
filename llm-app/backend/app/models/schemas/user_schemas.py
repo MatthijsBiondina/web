@@ -1,8 +1,6 @@
 # app/models/schemas/user_schema.py
 from datetime import datetime
-from fastapi_camelcase import CamelModel
-from pydantic import Field
-from typing import Optional
+
 from app.models.schemas.defaults import SchemaBase
 
 

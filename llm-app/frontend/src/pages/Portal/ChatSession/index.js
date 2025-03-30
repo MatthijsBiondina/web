@@ -7,23 +7,22 @@ import { useNavigate, useLocation } from "react-router-dom";
 import MKBox from "components/MKBox";
 
 // Material Kit 2 PRO React examples
-// import DefaultNavbar from "examples/Navbars/DefaultNavbar";
+import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 
-// Custom components
-import ChatSection from "components/MYChatSection"; // Import the new component
-
 // Routes
-// import portalRoutes from "routes/portal-routes";
+import portalRoutes from "routes/portal-routes";
 import footerRoutes from "footer.routes";
 
 // Services
 import { creditService } from "services/creditService";
 
 // Components
-import ChatSessionSidebar from "pages/Portal/Conversation/components/ChatSessionSidebar";
-import LoadingScreen from "pages/Portal/Conversation/components/LoadingScreen";
-function Conversation() {
+import ChatSessionSidebar from "./sections/ChatSessionSidebar";
+import LoadingScreen from "./sections/LoadingScreen";
+import ChatSection from "./sections/ChatSection";
+
+function ChatSession() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,9 +57,8 @@ function Conversation() {
 
   return (
     <>
-      {/* <MKBox position="fixed" top="0.5rem" width="100%">
-        <DefaultNavbar routes={portalRoutes} />
-      </MKBox> */}
+      {/* <DefaultNavbar routes={portalRoutes} sticky transparent /> */}
+
       <Grid container spacing={3} alignItems="center">
         <ChatSessionSidebar />
 
@@ -74,4 +72,4 @@ function Conversation() {
   );
 }
 
-export default Conversation;
+export default ChatSession;

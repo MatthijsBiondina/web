@@ -2,7 +2,7 @@ import datetime
 from http.client import HTTPException
 import os
 import logging
-
+from pymongo.errors import DuplicateKeyError
 from bson import ObjectId
 import mollie
 from app.models.mongo.user_models import UserDocument
@@ -46,15 +46,20 @@ class OrderService:
         if not payment["id"]:
             logger.error(f"Error creating mollie payment: {payment}")
 
-        order = OrderDocument(
-            user=user,
-            order_number=order_number,
-            payment_id=payment["id"],
-            amount=amount,
-            currency=currency,
-            product="one-time-access",
-        )
-        order.save()
+        try:
+
+            order = OrderDocument(
+                user=user,
+                order_number=order_number,
+                payment_id=payment.id,
+                amount=amount,
+                currency=currency,
+                product="one-time-access",
+            )
+            order.save()
+        except DuplicateKeyError as e:
+            logger.error(f"Error creating order: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
 
         return payment.checkout_url
 
@@ -88,6 +93,7 @@ class OrderService:
 
         # If we got here, we successfully claimed the order for processing
         # Get the order details we need
+        # todo: move to CreditService
         order_doc = OrderDocument.objects.get(id=order_id)
         product_doc = CreditPriceDocument.objects.get(key=order_doc.product)
 

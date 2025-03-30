@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 // MUI imports
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -17,9 +19,12 @@ function PricingCard() {
     useSettings("currency-symbol");
   const { oneTimeAccessPrice, loading: oneTimeAccessPriceLoading } = useOneTimeAccessPrice();
   const loading = currencySymbolLoading || oneTimeAccessPriceLoading;
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const handleGetAccess = async () => {
     try {
+      setButtonLoading(true);
+
       // Call your backend endpoint
       const response = await apiClient.post("/orders/one-time-access");
 
@@ -32,6 +37,8 @@ function PricingCard() {
     } catch (error) {
       console.error("Payment initiation failed:", error);
       // Handle error appropriately
+    } finally {
+      setButtonLoading(false);
     }
   };
 
@@ -65,10 +72,11 @@ function PricingCard() {
                       variant="gradient"
                       color="info"
                       size="large"
-                      sx={{ my: 2 }}
+                      sx={{ my: 2, minWidth: "120px" }}
                       onClick={handleGetAccess}
+                      disabled={buttonLoading}
                     >
-                      Betalen
+                      {buttonLoading ? <CircularProgress color="white" size={20} /> : "Betalen"}
                     </MKButton>
                   </MKBox>
                 </Grid>

@@ -44,7 +44,7 @@ import LoadingScreen from "layouts/authorization/loading";
 
 // Portal pages
 import PortalOverviewPage from "layouts/pages/portal/overview";
-import ConversationPage from "layouts/pages/portal/conversation";
+import ChatSessionPage from "layouts/pages/portal/chat-session";
 import TermsFormPage from "layouts/pages/portal/terms-acceptance";
 import BuyCreditsPage from "layouts/pages/portal/buy-credits";
 import SubscriptionsPage from "layouts/pages/portal/subscriptions";
@@ -123,7 +123,7 @@ export default function App() {
               <PrivateRoute>
                 <AuthorizedRoute>
                   <Routes>
-                    <Route path="chat-sessie" element={<ConversationPage />} />
+                    <Route path="chat-sessie" element={<ChatSessionPage />} />
                     <Route path="eenmalige-toegang" element={<BuyCreditsPage />} />
                     <Route path="abonnementen" element={<SubscriptionsPage />} />
                     <Route path="*" element={<PortalOverviewPage />} />

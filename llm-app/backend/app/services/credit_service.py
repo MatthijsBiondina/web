@@ -1,4 +1,7 @@
-from app.models.mongo.credit_models import CreditBalanceDocument
+from app.models.mongo.credit_models import (
+    CreditBalanceDocument,
+    CreditOperationDocument,
+)
 from app.models.mongo.service_models import ServicePriceDocument
 from app.models.mongo.user_models import UserDocument
 from app.services.settings_service import SettingsService
@@ -19,6 +22,37 @@ class CreditService:
         service_price = ServicePriceDocument.objects.get(service_name=task_type)
 
         return balance.amount >= service_price.amount
+
+    @staticmethod
+    def deduct_credits(task_type: str, user: UserDocument):
+        if not CreditService.check_sufficient_credits(task_type, user):
+            raise RuntimeError("Not enough credits")
+        service_price = ServicePriceDocument.objects.get(service_name=task_type)
+
+        _ = CreditService.__get_or_create_balance(user)
+        credit_operation = CreditOperationDocument(
+            user=user,
+            amount=-service_price.amount,
+            operation_type="debit",
+            details=f"Deducted {service_price.amount} credits for {task_type}",
+        )
+        credit_operation.save()
+        try:
+            CreditBalanceDocument.objects(user=user).update_one(
+                inc__amount=-service_price.amount
+            )
+        except Exception as e:
+            logger.error(f"Error deducting credits: {e}")
+            CreditOperationDocument.objects(
+                user=user, id=credit_operation.id
+            ).update_one(
+                set__status="failed",
+                set__details=f"Deducting {service_price.amount} credits failed: {str(e)}",
+            )
+            raise e
+        CreditOperationDocument.objects(user=user, id=credit_operation.id).update_one(
+            set__status="completed"
+        )
 
     @staticmethod
     def __get_or_create_balance(user: UserDocument):

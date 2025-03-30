@@ -13,10 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import Conversation from "pages/Portal/Conversation";
+import ChatSession from "pages/Portal/ChatSession";
 
 // Material Kit 2 PRO React pages
 
-export default function ConversationPage() {
-  return <Conversation />;
+export default function ChatSessionPage() {
+  return <ChatSession />;
 }

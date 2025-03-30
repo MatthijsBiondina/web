@@ -25,3 +25,19 @@ class CreditPriceDocument(Document):
 
     def __str__(self):
         return f"CreditPricing(key={self.key}, amount_cents={self.amount_cents}, amount_credits={self.amount_credits}, currency={self.currency}, currency_symbol={self.currency_symbol})"
+
+
+class CreditOperationDocument(Document):
+    user = ReferenceField(UserDocument, required=True)
+    amount = IntField(required=True)
+    operation_type = StringField(required=True, choices=["credit", "debit"])
+    details = StringField(required=True)
+    created_at = DateTimeField(required=True, default=datetime.now)
+    status = StringField(
+        required=True, choices=["pending", "completed", "failed"], default="pending"
+    )
+
+    meta = {"collection": "credit_operations", "indexes": ["user"]}
+
+    def __str__(self):
+        return f"CreditOperation(user={self.user}, amount={self.amount}, operation_type={self.operation_type}, details={self.details}, created_at={self.created_at})"
