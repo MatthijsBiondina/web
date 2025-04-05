@@ -7,11 +7,6 @@ function MessageContainer() {
   const { messages, currentTypingMessage } = useChat();
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to bottom when messages change
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
-
   return (
     <MKBox
       sx={{

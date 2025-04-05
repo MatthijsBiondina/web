@@ -10,7 +10,7 @@ export const ChatProvider = ({ children }) => {
   const [currentTypingMessage, setCurrentTypingMessage] = useState(null);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const [chatId, setChatId] = useState(null);
-
+  const [isFirstMessage, setIsFirstMessage] = useState(true);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlChatId = params.get("chatId");
@@ -105,6 +105,7 @@ export const ChatProvider = ({ children }) => {
         isTypingComplete,
         sendMessage,
         completeTyping,
+        isFirstMessage,
       }}
     >
       {children}

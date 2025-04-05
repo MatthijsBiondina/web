@@ -31,58 +31,15 @@ import DefaultFooter from "examples/Footers/DefaultFooter";
 // Routes
 import footerRoutes from "footer.routes";
 
-// Images
-import bgImage from "assets/images/bg-home.jpg";
-import Actions from "./sections/Actions";
+import ChatHistory from "./sections/ChatHistory";
 import portalRoutes from "routes/portal-routes";
-import Credits from "./sections/Credits";
+import PageHeader from "./sections/PageHeader";
+import Search from "./sections/Search";
 function PortalOverview() {
   return (
     <>
       <DefaultNavbar routes={portalRoutes} />
-
-      <MKBox
-        minHeight="50vh"
-        width="100%"
-        sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-            `${linearGradient(
-              rgba(gradients.dark.main, 0.5),
-              rgba(gradients.dark.state, 0.5)
-            )}, url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          display: "grid",
-          placeItems: "center",
-        }}
-      >
-        <Container>
-          <Grid
-            container
-            item
-            xs={12}
-            lg={8}
-            justifyContent="center"
-            sx={{ mx: "auto", textAlign: "center" }}
-          >
-            <MKTypography
-              variant="h2"
-              color="white"
-              sx={({ breakpoints, typography: { size } }) => ({
-                [breakpoints.down("md")]: {
-                  fontSize: size["3xl"],
-                },
-              })}
-            >
-              Woef Waf Woef.................
-            </MKTypography>
-            <MKTypography variant="body1" color="white" mt={1}>
-              Begin een nieuw gesprek of lees uw oude gesprekken terug.
-            </MKTypography>
-          </Grid>
-        </Container>
-      </MKBox>
-
+      <PageHeader />
       <Card
         sx={{
           p: 2,
@@ -95,8 +52,8 @@ function PortalOverview() {
           overflow: "hidden",
         }}
       >
-        <Credits />
-        <Actions />
+        <Search />
+        <ChatHistory />
       </Card>
 
       <MKBox pt={6} px={1} mt={6}>

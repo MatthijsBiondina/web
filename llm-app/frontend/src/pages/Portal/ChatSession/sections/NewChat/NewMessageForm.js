@@ -1,34 +1,37 @@
 import { useState } from "react";
-import Grid from "@mui/material/Grid";
+
 import MKBox from "components/MKBox";
 import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
-import { useChat } from "../contexts/ChatContext";
-import PropTypes from "prop-types";
-import CircularProgress from "@mui/material/CircularProgress";
-function MessageInput() {
+import Grid from "@mui/material/Grid";
+
+function NewMessageForm() {
   const [message, setMessage] = useState("");
-  const { sendMessage, isLoading } = useChat();
+  const [subject, setSubject] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (message.trim() && !isLoading) {
-      sendMessage(message);
+    if (message.trim() && subject.trim()) {
       setMessage("");
+      setSubject("");
     }
   };
 
   return (
-    <MKBox
-      bgColor="white"
-      borderRadius="xl"
-      shadow="lg"
-      p={3}
-      mb={{ xs: 20, sm: 18, md: 20 }}
-      mx={3}
-    >
+    <MKBox width="100%" bgColor="white" borderRadius="xl" shadow="lg" p={3}>
       <MKBox width="100%" component="form" onSubmit={handleSubmit} autoComplete="off">
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MKInput
+              variant="standard"
+              label="Onderwerp"
+              placeholder="Voer een onderwerp in voor deze conversatie"
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
+          </Grid>
           <Grid item xs={12}>
             <MKInput
               variant="standard"
@@ -39,7 +42,6 @@ function MessageInput() {
               rows={6}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              disabled={isLoading}
             />
           </Grid>
         </Grid>
@@ -48,9 +50,10 @@ function MessageInput() {
             type="submit"
             variant="gradient"
             color="info"
-            disabled={isLoading || !message.trim()}
+            disabled={!message.trim() || !subject.trim()}
+            onClick={handleSubmit}
           >
-            {isLoading ? <CircularProgress size={20} /> : "Versturen"}
+            {"Versturen"}
           </MKButton>
         </Grid>
       </MKBox>
@@ -58,8 +61,4 @@ function MessageInput() {
   );
 }
 
-export default MessageInput;
-
-MessageInput.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-};
+export default NewMessageForm;

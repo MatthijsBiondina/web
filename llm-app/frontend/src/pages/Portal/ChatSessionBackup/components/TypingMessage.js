@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import MKTypography from "components/MKTypography";
 import PropTypes from "prop-types";
+
 function TypingMessage({ message, onComplete, typingSpeed = 1 }) {
   const [displayedText, setDisplayedText] = useState("");
   const charIndex = useRef(0);

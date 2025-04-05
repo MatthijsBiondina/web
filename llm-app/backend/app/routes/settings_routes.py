@@ -9,6 +9,16 @@ router = APIRouter()
 
 
 @router.get("/currency-symbol")
-async def get_setting(user: UserDocument = Depends(authorize(Role.UNVERIFIED_USER))):
+async def get_setting_currency_symbol(
+    user: UserDocument = Depends(authorize(Role.UNVERIFIED_USER)),
+):
     setting = SettingsService.get_setting("currency_symbol")
+    return SettingStringResponse(setting=setting)
+
+
+@router.get("/chat-initial-message")
+async def get_setting_chat_initial_message(
+    user: UserDocument = Depends(authorize(Role.UNVERIFIED_USER)),
+):
+    setting = SettingsService.get_setting("chat_initial_message")
     return SettingStringResponse(setting=setting)
