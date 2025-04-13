@@ -23,9 +23,18 @@ class ChatMessageDocument(Document):
     def __str__(self):
         return f"ChatMessage(user={self.user}, text={self.text}, sender={self.sender}, created_at={self.created_at})"
 
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "text": self.text,
+            "sender": self.sender,
+            "created_at": self.created_at,
+        }
+
 
 class ChatDocument(Document):
     user = ReferenceField(UserDocument, required=True)
+    subject = StringField(required=True)
     messages = ListField(ReferenceField(ChatMessageDocument), required=True)
     created_at = DateTimeField(required=True, default=datetime.now)
     updated_at = DateTimeField(required=True, default=datetime.now)
@@ -33,4 +42,4 @@ class ChatDocument(Document):
     meta = {"collection": "chats", "indexes": ["user"], "ordering": ["created_at"]}
 
     def __str__(self):
-        return f"Chat(user={self.user}, created_at={self.created_at})"
+        return f"Chat(user={self.user}, subject={self.subject}, created_at={self.created_at})"

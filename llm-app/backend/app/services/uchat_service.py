@@ -19,6 +19,7 @@ class UChatService:
     def _get_uchat_response(user: UserDocument, chat_id: str):
         chat = ChatDocument.objects(user=user, id=chat_id).first()
         logger.info(f"Chat: {str(chat)}")
+        time.sleep(10)
 
         if chat:
             ChatMessageDocument.objects(

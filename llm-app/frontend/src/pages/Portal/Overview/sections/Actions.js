@@ -27,13 +27,14 @@ import SimpleBookingCard from "examples/Cards/BookingCards/SimpleBookingCard";
 import product1 from "assets/images/portal-actions/new-question.jpg";
 import product2 from "assets/images/portal-actions/old-question.jpg";
 import product3 from "assets/images/portal-actions/manage-account.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Actions() {
   const actionProps = {
     type: "internal",
-    route: "/pages/landing-pages/rental",
+    route: "/portaal/chat-sessie",
     color: "info",
-    label: "from / night",
+    label: "Chat",
   };
 
   return (

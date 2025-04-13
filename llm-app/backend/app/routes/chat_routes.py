@@ -5,10 +5,15 @@ from app.dependencies.authorization import authorize
 from app.models.domain.roles import Role
 from app.models.mongo.user_models import UserDocument
 from app.models.schemas.chat_schemas import (
+    CreateChatRequest,
+    CreateChatResponse,
+    Message,
     MessageSendRequest,
     MessageStatusRequest,
     MessageSendResponse,
     MessageStatusResponse,
+    RetrieveMessagesRequest,
+    RetrieveMessagesResponse,
 )
 from app.services.chat_service import ChatService
 
@@ -17,16 +22,33 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@router.post("/create")
+async def create_chat_route(
+    request: CreateChatRequest,
+    user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
+):
+    try:
+        chat_id = ChatService.create_chat(user, request.subject, request.text)
+        return CreateChatResponse(chat_id=str(chat_id))
+    except RuntimeError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
 @router.post("/send-message")
 async def send_message_route(
     request: MessageSendRequest,
     user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
 ):
     try:
-        chat_id = ChatService.send_message(user, request.text, request.chat_id)
+        user_message_id, assistant_message_id = ChatService.send_message(
+            user, request.text, request.chat_id
+        )
     except RuntimeError as e:
         raise HTTPException(status_code=402, detail=str(e))
-    return MessageSendResponse(chat_id=str(chat_id))
+    return MessageSendResponse(
+        user_message_id=str(user_message_id),
+        assistant_message_id=str(assistant_message_id),
+    )
 
 
 @router.get("/check-message-status")
@@ -36,6 +58,23 @@ async def check_message_status_route(
 ):
     try:
         status, message = ChatService.check_message_status(user, request.chat_id)
-        return MessageStatusResponse(complete=(status == "completed"), message=message)
+        return MessageStatusResponse(
+            complete=(status == "completed"),
+            message=None if message is None else Message(**message.to_dict()),
+        )
+    except RuntimeError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
+@router.get("/retrieve-messages")
+async def retrieve_messages_route(
+    request: RetrieveMessagesRequest = Depends(),
+    user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
+):
+    try:
+        messages = ChatService.retrieve_messages(user, request.chat_id)
+        return RetrieveMessagesResponse(
+            messages=[Message(**message) for message in messages]
+        )
     except RuntimeError as e:
         raise HTTPException(status_code=402, detail=str(e))

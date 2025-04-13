@@ -31,9 +31,9 @@ import product3 from "assets/images/portal-actions/manage-account.jpg";
 function ChatHistory() {
   const actionProps = {
     type: "internal",
-    route: "/pages/landing-pages/rental",
+    route: "/portaal/chat-sessie",
     color: "info",
-    label: "from / night",
+    label: "Chat",
   };
 
   return (

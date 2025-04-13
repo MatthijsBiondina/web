@@ -1,4 +1,21 @@
 from app.models.schemas.defaults import SchemaBase
+from datetime import datetime
+
+
+class Message(SchemaBase):
+    id: str
+    text: str
+    sender: str
+    created_at: datetime
+
+
+class CreateChatRequest(SchemaBase):
+    subject: str
+    text: str
+
+
+class CreateChatResponse(SchemaBase):
+    chat_id: str
 
 
 class MessageSendRequest(SchemaBase):
@@ -7,7 +24,8 @@ class MessageSendRequest(SchemaBase):
 
 
 class MessageSendResponse(SchemaBase):
-    chat_id: str
+    user_message_id: str
+    assistant_message_id: str
 
 
 class MessageStatusRequest(SchemaBase):
@@ -16,4 +34,12 @@ class MessageStatusRequest(SchemaBase):
 
 class MessageStatusResponse(SchemaBase):
     complete: bool
-    message: str | None = None
+    message: Message | None = None
+
+
+class RetrieveMessagesRequest(SchemaBase):
+    chat_id: str
+
+
+class RetrieveMessagesResponse(SchemaBase):
+    messages: list[Message]

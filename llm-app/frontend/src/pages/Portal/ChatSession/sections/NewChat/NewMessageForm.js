@@ -4,16 +4,24 @@ import MKBox from "components/MKBox";
 import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
 import Grid from "@mui/material/Grid";
+import { useChat } from "../../contexts/ChatContext";
 
+import { useNavigate } from "react-router-dom";
 function NewMessageForm() {
+  const { createChat, messages, setMessages } = useChat();
+  const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
   const [subject, setSubject] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (message.trim() && subject.trim()) {
-      setMessage("");
-      setSubject("");
+      const newMessages = [...messages, { text: message, sender: "user" }];
+      setMessages(newMessages);
+      const chatId = await createChat(subject, message);
+
+      navigate(`/portaal/chat-sessie?chatId=${chatId}`);
     }
   };
 

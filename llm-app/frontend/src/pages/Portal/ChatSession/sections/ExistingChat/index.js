@@ -1,9 +1,10 @@
 import Grid from "@mui/material/Grid";
 import MKBox from "components/MKBox";
-import NewMessageForm from "./NewMessageForm";
-import WelcomeMessage from "./WelcomeMessage";
+import PropTypes from "prop-types";
+import MessageForm from "./MessageForm";
+import MessageList from "./MessageList";
 
-function NewChat() {
+function ExistingChat({ chatId }) {
   return (
     <Grid
       item
@@ -21,11 +22,15 @@ function NewChat() {
       }}
     >
       <MKBox mt="auto">
-        <WelcomeMessage />
-        <NewMessageForm />
+        <MessageList chatId={chatId} />
+        <MessageForm chatId={chatId} />
       </MKBox>
     </Grid>
   );
 }
 
-export default NewChat;
+ExistingChat.propTypes = {
+  chatId: PropTypes.string.isRequired,
+};
+
+export default ExistingChat;
