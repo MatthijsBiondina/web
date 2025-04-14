@@ -13,6 +13,7 @@ export const OverviewProvider = ({ children }) => {
   const [sortBy, setSortBy] = useState("created_at_newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
+  const [numberOfPages, setNumberOfPages] = useState(0);
 
   // Start with loading as true
   const [loading, setLoading] = useState(true);
@@ -79,6 +80,16 @@ export const OverviewProvider = ({ children }) => {
     }
   }, [searchQuery, allChats]);
 
+  useEffect(() => {
+    // Set page number to 1
+    setPageNumber(1);
+
+    // Set number of pages to the length of the filtered chats divided by the page size
+    setNumberOfPages(Math.ceil((filteredChats.length + 1) / pageSize));
+
+    console.log("numberOfPages", numberOfPages);
+  }, [filteredChats]);
+
   return (
     <OverviewContext.Provider
       value={{
@@ -92,6 +103,7 @@ export const OverviewProvider = ({ children }) => {
         pageNumber,
         setPageNumber,
         pageSize,
+        numberOfPages,
       }}
     >
       {children}
