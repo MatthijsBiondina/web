@@ -1,75 +1,89 @@
-/*
-=========================================================
-* Material Kit 2 PRO React - v2.1.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-kit-pro-react
-* Copyright 2024 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
+import { useState, useEffect } from "react";
+import { useOverview } from "pages/Portal/Overview/contexts/OverviewContext";
 // @mui material components
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Material Kit 2 PRO React components
 import MKBox from "components/MKBox";
 
-// Material Kit 2 PRO React components
-import SimpleBookingCard from "examples/Cards/BookingCards/SimpleBookingCard";
-
-// Images
-import product1 from "assets/images/portal-actions/new-question.jpg";
-import product2 from "assets/images/portal-actions/old-question.jpg";
-import product3 from "assets/images/portal-actions/manage-account.jpg";
+import NewQuestionCard from "pages/Portal/Overview/components/cards/NewQuestionCard";
+import ExistingQuestionCard from "pages/Portal/Overview/components/cards/ExistingQuestionCard";
 
 function ChatHistory() {
-  const actionProps = {
-    type: "internal",
-    route: "/portaal/chat-sessie",
-    color: "info",
-    label: "Chat",
-  };
+  const { loading, filteredChats, pageNumber, pageSize } = useOverview();
+  const [displayedCards, setDisplayedCards] = useState([]);
+  const [localLoading, setLocalLoading] = useState(true); // Add a local loading state
+
+  useEffect(() => {
+    // Only update displayed cards if not loading
+    if (!loading) {
+      if (pageNumber === 1) {
+        setDisplayedCards([
+          <NewQuestionCard key={0} />,
+          ...filteredChats
+            .slice(0, pageSize - 1)
+            .map((chat, index) => <ExistingQuestionCard key={index + 1} chat={chat} />),
+        ]);
+      } else {
+        const startIndex = (pageNumber - 1) * pageSize - 1;
+        const endIndex = startIndex + pageSize;
+        setDisplayedCards(
+          filteredChats
+            .slice(startIndex, endIndex)
+            .map((chat, index) => <ExistingQuestionCard key={index} chat={chat} />)
+        );
+      }
+      // Only set localLoading to false after displayedCards has been updated
+      setLocalLoading(false);
+    } else {
+      // Reset local loading state when main loading state changes to true
+      setLocalLoading(true);
+    }
+  }, [filteredChats, pageNumber, loading]);
 
   return (
     <MKBox component="section" py={3}>
       <Container>
         <Grid container spacing={3} sx={{ mt: 3 }}>
-          <Grid item xs={12} md={6} lg={4}>
-            <MKBox mt={3}>
-              <SimpleBookingCard
-                image={product1}
-                title="Nieuwe vraag"
-                description="Lorum Ipsum"
-                action={actionProps}
-              />
-            </MKBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <MKBox mt={3}>
-              <SimpleBookingCard
-                image={product2}
-                title="Gesprekken teruglezen"
-                description="Lorum ipsum"
-                action={actionProps}
-              />
-            </MKBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <MKBox mt={3}>
-              <SimpleBookingCard
-                image={product3}
-                title="Account beheren"
-                description="Lorum ipsum"
-                action={actionProps}
-              />
-            </MKBox>
-          </Grid>
+          {loading || localLoading ? (
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+              <MKBox
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="200px"
+              >
+                <CircularProgress size={40} />
+              </MKBox>
+            </Grid>
+          ) : (
+            <>
+              {displayedCards.length > 0 ? (
+                displayedCards.map((card, index) => (
+                  <Grid item xs={12} md={6} lg={4} key={index}>
+                    <MKBox
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      {card}
+                    </MKBox>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12} display="flex" justifyContent="center">
+                  <MKBox py={3}>
+                    <NewQuestionCard />
+                  </MKBox>
+                </Grid>
+              )}
+            </>
+          )}
         </Grid>
       </Container>
     </MKBox>

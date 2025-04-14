@@ -36,15 +36,9 @@ function MessageList({ chatId }) {
     }
   }, [chatId, messages, waitForChatbotResponse]);
 
-  console.log(
-    "Messages in MessageList:",
-    messages.map((msg) => ({ id: msg.id, sender: msg.sender }))
-  );
-
   return (
     <MKBox display="flex" flexDirection="column">
       {messages.map((message, index) => {
-        console.log(`Message ${index}:`, message.id, message.sender);
         return (
           <Message
             key={message.id || `message-${index}`}

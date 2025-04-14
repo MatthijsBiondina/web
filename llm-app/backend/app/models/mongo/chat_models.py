@@ -1,4 +1,11 @@
-from mongoengine import Document, ReferenceField, StringField, DateTimeField, ListField
+from mongoengine import (
+    Document,
+    ReferenceField,
+    StringField,
+    DateTimeField,
+    ListField,
+    IntField,
+)
 from datetime import datetime
 from app.models.mongo.user_models import UserDocument
 
@@ -38,6 +45,7 @@ class ChatDocument(Document):
     messages = ListField(ReferenceField(ChatMessageDocument), required=True)
     created_at = DateTimeField(required=True, default=datetime.now)
     updated_at = DateTimeField(required=True, default=datetime.now)
+    nr_of_reads = IntField(required=True, default=0)
 
     meta = {"collection": "chats", "indexes": ["user"], "ordering": ["created_at"]}
 

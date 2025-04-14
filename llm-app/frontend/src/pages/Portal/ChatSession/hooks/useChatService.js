@@ -34,8 +34,6 @@ const useSendMessage = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("useChatService.js: chatId", chatId);
-      console.log("useChatService.js: message", message);
 
       const response = await chatService.sendMessage(message, chatId);
 

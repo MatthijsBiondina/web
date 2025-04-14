@@ -2,7 +2,7 @@ from app.models.schemas.defaults import SchemaBase
 from datetime import datetime
 
 
-class Message(SchemaBase):
+class MessageSchema(SchemaBase):
     id: str
     text: str
     sender: str
@@ -34,7 +34,7 @@ class MessageStatusRequest(SchemaBase):
 
 class MessageStatusResponse(SchemaBase):
     complete: bool
-    message: Message | None = None
+    message: MessageSchema | None = None
 
 
 class RetrieveMessagesRequest(SchemaBase):
@@ -42,4 +42,17 @@ class RetrieveMessagesRequest(SchemaBase):
 
 
 class RetrieveMessagesResponse(SchemaBase):
-    messages: list[Message]
+    messages: list[MessageSchema]
+
+
+class ChatSchema(SchemaBase):
+    id: str
+    subject: str
+    created_at: datetime
+    nr_of_reads: int
+    first_user_message: MessageSchema | None = None
+    first_assistant_message: MessageSchema | None = None
+
+
+class GetAllChatsResponse(SchemaBase):
+    chats: list[ChatSchema]

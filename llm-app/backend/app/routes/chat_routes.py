@@ -7,13 +7,15 @@ from app.models.mongo.user_models import UserDocument
 from app.models.schemas.chat_schemas import (
     CreateChatRequest,
     CreateChatResponse,
-    Message,
+    MessageSchema,
+    ChatSchema,
     MessageSendRequest,
     MessageStatusRequest,
     MessageSendResponse,
     MessageStatusResponse,
     RetrieveMessagesRequest,
     RetrieveMessagesResponse,
+    GetAllChatsResponse,
 )
 from app.services.chat_service import ChatService
 
@@ -60,7 +62,7 @@ async def check_message_status_route(
         status, message = ChatService.check_message_status(user, request.chat_id)
         return MessageStatusResponse(
             complete=(status == "completed"),
-            message=None if message is None else Message(**message.to_dict()),
+            message=None if message is None else MessageSchema(**message.to_dict()),
         )
     except RuntimeError as e:
         raise HTTPException(status_code=402, detail=str(e))
@@ -74,7 +76,18 @@ async def retrieve_messages_route(
     try:
         messages = ChatService.retrieve_messages(user, request.chat_id)
         return RetrieveMessagesResponse(
-            messages=[Message(**message) for message in messages]
+            messages=[MessageSchema(**message) for message in messages]
         )
+    except RuntimeError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
+@router.get("/get-all-chats")
+async def get_all_chats_route(
+    user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
+):
+    try:
+        chats = ChatService.get_all_chats(user)
+        return GetAllChatsResponse(chats=[ChatSchema(**chat) for chat in chats])
     except RuntimeError as e:
         raise HTTPException(status_code=402, detail=str(e))

@@ -47,9 +47,42 @@ class ChatService:
     def retrieve_messages(user: UserDocument, chat_id: str):
         chat = ChatDocument.objects(user=user, id=ObjectId(chat_id)).first()
         if chat:
+            ChatDocument.objects(id=chat.id).update_one(inc__nr_of_reads=1)
             return [message.to_dict() for message in chat.messages]
         else:
             raise RuntimeError("Chat not found")
+
+    @staticmethod
+    def get_all_chats(user: UserDocument):
+        chats = ChatDocument.objects(user=user)
+        if chats:
+            chat_dicts = []
+            for chat in chats:
+                id_ = str(chat.id)
+                subject = chat.subject
+                created_at = chat.created_at
+                nr_of_reads = chat.nr_of_reads
+                first_user_message = (
+                    None if len(chat.messages) < 2 else chat.messages[1].to_dict()
+                )
+                first_assistant_message = (
+                    None if len(chat.messages) < 3 else chat.messages[2].to_dict()
+                )
+
+                chat_dicts.append(
+                    {
+                        "id": id_,
+                        "subject": subject,
+                        "created_at": created_at,
+                        "nr_of_reads": nr_of_reads,
+                        "first_user_message": first_user_message,
+                        "first_assistant_message": first_assistant_message,
+                    }
+                )
+
+            return chat_dicts
+        else:
+            return []
 
     @staticmethod
     def _get_chat(user: UserDocument, chat_id: str | None = None):
@@ -81,6 +114,11 @@ class ChatService:
 
     @staticmethod
     def _add_new_user_prompt(chat: ChatDocument, user: UserDocument, text: str):
+        if not chat.messages[-1].sender == "assistant":
+            raise RuntimeError("Last message is not an assistant message")
+        if not chat.messages[-1].status == "completed":
+            raise RuntimeError("Chatbot is not done with the previous message")
+
         user_message = ChatMessageDocument(
             user=user,
             text=text,

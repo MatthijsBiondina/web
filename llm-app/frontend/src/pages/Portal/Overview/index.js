@@ -14,13 +14,10 @@ Coded by www.creative-tim.com
 */
 
 // @mui material components
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
 // Material Kit 2 PRO React components
 import MKBox from "components/MKBox";
-import MKTypography from "components/MKTypography";
 
 // Material Kit 2 PRO React examples
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
@@ -35,9 +32,10 @@ import ChatHistory from "./sections/ChatHistory";
 import portalRoutes from "routes/portal-routes";
 import PageHeader from "./sections/PageHeader";
 import Search from "./sections/Search";
+import { OverviewProvider } from "./contexts/OverviewContext";
 function PortalOverview() {
   return (
-    <>
+    <OverviewProvider>
       <DefaultNavbar routes={portalRoutes} />
       <PageHeader />
       <Card
@@ -59,7 +57,7 @@ function PortalOverview() {
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />
       </MKBox>
-    </>
+    </OverviewProvider>
   );
 }
 

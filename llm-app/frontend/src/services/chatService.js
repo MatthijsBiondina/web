@@ -5,7 +5,6 @@ export const chatService = {
   // Create chat
   createChat: async (subject, text) => {
     try {
-      console.log("Creating chat:", subject, text);
       const response = await apiClient.post("/chat/create", { subject, text });
       return response.data;
     } catch (error) {
@@ -24,7 +23,7 @@ export const chatService = {
       return { error: "Error sending message" };
     }
   },
-
+  // Check message status
   checkMessageStatus: async (chatId) => {
     try {
       const response = await apiClient.get(`/chat/check-message-status?chatId=${chatId}`);
@@ -35,6 +34,7 @@ export const chatService = {
     }
   },
 
+  // Retrieve messages
   retrieveMessages: async (chatId) => {
     try {
       const response = await apiClient.get(`/chat/retrieve-messages?chatId=${chatId}`);
@@ -45,6 +45,7 @@ export const chatService = {
     }
   },
 
+  // Wait for chatbot response
   waitForChatbotResponse: async (chatId) => {
     const pollInterval = 2000; // 2 seconds in milliseconds
 
@@ -69,5 +70,16 @@ export const chatService = {
     };
 
     return pollForResponse();
+  },
+
+  // Get chats
+  getAllChats: async () => {
+    try {
+      const response = await apiClient.get("/chat/get-all-chats");
+      return response.data;
+    } catch (error) {
+      console.error("Error getting chats:", error);
+      return { error: "Error getting chats" };
+    }
   },
 };
