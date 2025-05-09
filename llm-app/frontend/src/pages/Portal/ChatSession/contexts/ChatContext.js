@@ -45,6 +45,7 @@ export const ChatProvider = ({ children }) => {
     if (!chatId) return;
     setLoading(true);
     const message = await waitForChatbotResponseService(chatId);
+    console.log("message", message);
     setMessages((prevMessages) => [...prevMessages, message]);
     setLoading(false);
   };

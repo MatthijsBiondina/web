@@ -34,6 +34,7 @@ class MessageStatusRequest(SchemaBase):
 
 class MessageStatusResponse(SchemaBase):
     complete: bool
+    failed: bool
     message: MessageSchema | None = None
 
 

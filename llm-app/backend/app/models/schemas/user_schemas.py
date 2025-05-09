@@ -19,6 +19,7 @@ class UserResponse(SchemaBase):
     uid: str
     email: str
     has_accepted_terms: bool
+    admin: bool
     display_name: str
     photo_url: str
     created_at: datetime

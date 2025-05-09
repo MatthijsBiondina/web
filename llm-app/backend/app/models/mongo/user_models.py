@@ -23,6 +23,7 @@ class UserDocument(Document):
             "uid": self.uid,
             "email": self.email,
             "has_accepted_terms": self.has_accepted_terms,
+            "admin": "admin" in self.roles,
             "display_name": self.display_name,
             "photo_url": self.photo_url,
             "created_at": self.created_at,

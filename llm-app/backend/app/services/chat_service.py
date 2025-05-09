@@ -7,7 +7,7 @@ from app.models.mongo.chat_models import ChatDocument, ChatMessageDocument
 from app.models.mongo.user_models import UserDocument
 from app.services.credit_service import CreditService
 from app.services.settings_service import SettingsService
-from app.services.uchat_service import UChatService
+from app.services.chatbot.chatbot_service import ChatbotService
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,8 @@ class ChatService:
             assistant_message = chat.messages[-1]
             if assistant_message.status == "completed":
                 return "completed", assistant_message
+            elif assistant_message.status == "failed":
+                return "failed", assistant_message
             else:
                 return "pending", None
         else:
@@ -137,5 +139,11 @@ class ChatService:
         ChatDocument.objects(id=chat.id).update_one(
             push_all__messages=[user_message, assistant_message]
         )
-        UChatService.run(user, chat.id)
+        ChatbotService.run(user, chat.id)
         return user_message, assistant_message
+
+    @staticmethod
+    def clear_chats_database():
+        ChatDocument.objects.delete()
+        ChatMessageDocument.objects.delete()
+        logger.info("All chats have been deleted")

@@ -80,7 +80,6 @@ const useWaitForChatbotResponse = () => {
       setLoading(true);
       setError(null);
       const response = await chatService.waitForChatbotResponse(chatId);
-
       return response.message;
     } catch (error) {
       setError(error);

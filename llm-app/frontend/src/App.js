@@ -32,7 +32,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 // Route components
 import AuthorizedRoute from "components/MYRoutes/AuthorizedRoute";
 import PrivateRoute from "components/MYRoutes/PrivateRoute";
-
+import AdminRoute from "components/MYRoutes/AdminRoute";
 // Authentication pages
 import SignInPage from "layouts/authentication/sign-in";
 import SignUpPage from "layouts/authentication/sign-up";
@@ -49,6 +49,9 @@ import TermsFormPage from "layouts/pages/portal/terms-acceptance";
 import BuyCreditsPage from "layouts/pages/portal/buy-credits";
 import SubscriptionsPage from "layouts/pages/portal/subscriptions";
 
+// Admin pages
+import AdminMainPage from "layouts/pages/admin/main";
+import ChatsDatabasePage from "layouts/pages/admin/chats-database";
 // Landing pages
 import HomePage from "layouts/pages/landing-pages/home";
 
@@ -133,6 +136,21 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/admin/*"
+            element={
+              <PrivateRoute>
+                <AuthorizedRoute>
+                  <AdminRoute>
+                    <Routes>
+                      <Route path="chats-database" element={<ChatsDatabasePage />} />
+                      <Route path="*" element={<AdminMainPage />} />
+                    </Routes>
+                  </AdminRoute>
+                </AuthorizedRoute>
+              </PrivateRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/home" />} />
         </Routes>
       </ThemeProvider>

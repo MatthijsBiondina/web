@@ -7,7 +7,7 @@ from app.routes.prices_routes import router as prices_routes
 from app.routes.settings_routes import router as settings_routes
 from app.routes.order_routes import router as order_routes
 from app.routes.chat_routes import router as chat_routes
-
+from app.routes.admin_routes import router as admin_routes
 from app.routes.webhooks import router as mollie_webhook
 
 # Main router that combines all route modules
@@ -30,3 +30,4 @@ router.include_router(settings_routes, prefix="/settings", tags=["settings"])
 router.include_router(order_routes, prefix="/orders", tags=["orders"])
 router.include_router(mollie_webhook, prefix="/webhooks", tags=["webhooks"])
 router.include_router(chat_routes, prefix="/chat", tags=["chat"])
+router.include_router(admin_routes, prefix="/admin", tags=["admin"])
