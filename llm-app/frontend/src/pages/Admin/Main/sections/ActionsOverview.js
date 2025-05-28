@@ -5,7 +5,7 @@ import MKBox from "components/MKBox";
 import Container from "@mui/material/Container";
 
 import databaseImage from "assets/images/admin-actions/database.jpg";
-
+import usersImage from "assets/images/admin-actions/gebruikers.jpg";
 function ActionsOverview() {
   const displayedCards = [
     {
@@ -13,6 +13,12 @@ function ActionsOverview() {
       image: databaseImage,
       title: "Chats Database",
       description: "Bekijk en beheer alle chats",
+    },
+    {
+      route: "/admin/users-database",
+      image: usersImage,
+      title: "Gebruikers Database",
+      description: "Bekijk en beheer alle gebruikers",
     },
   ];
 

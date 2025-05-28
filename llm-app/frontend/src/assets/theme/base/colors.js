@@ -155,16 +155,16 @@ export default {
       text: "#783839",
     },
     info: {
-      background: "#424242",
-      text: "#10120C",
+      background: "#7A6498",
+      text: "#3A373E",
     },
     success: {
-      background: "#6B6B6B",
+      background: "#6A9C6A",
       text: "#181C13",
     },
     warning: {
-      background: "#A8A39E",
-      text: "#704A24",
+      background: "#DE883B",
+      text: "#463424",
     },
     error: {
       background: "#ADA2A1",

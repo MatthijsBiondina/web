@@ -34,7 +34,7 @@ class CreditOperationDocument(Document):
     details = StringField(required=True)
     created_at = DateTimeField(required=True, default=datetime.now)
     status = StringField(
-        required=True, choices=["pending", "completed", "failed"], default="pending"
+        required=True, choices=["pending", "success", "failed"], default="pending"
     )
 
     meta = {"collection": "credit_operations", "indexes": ["user"]}

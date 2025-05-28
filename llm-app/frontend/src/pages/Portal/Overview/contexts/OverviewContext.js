@@ -23,7 +23,9 @@ export const OverviewProvider = ({ children }) => {
   // and applies the initial sort
   useEffect(() => {
     // Keep loading true until we have data
-    if (fetchedChats.chats && fetchedChats.chats.length > 0) {
+    // if (fetchedChats.chats && fetchedChats.chats.length > 0) {
+
+    if (fetchedChats.chats !== undefined) {
       // Apply the initial sort based on the default sortBy value
       const initialSortedChats = [...fetchedChats.chats];
 
@@ -69,8 +71,6 @@ export const OverviewProvider = ({ children }) => {
 
   // This effect filters chats based on the search query
   useEffect(() => {
-    console.log("searchQuery", searchQuery);
-
     if (searchQuery === "") {
       setFilteredChats(allChats);
     } else {
@@ -86,8 +86,6 @@ export const OverviewProvider = ({ children }) => {
 
     // Set number of pages to the length of the filtered chats divided by the page size
     setNumberOfPages(Math.ceil((filteredChats.length + 1) / pageSize));
-
-    console.log("numberOfPages", numberOfPages);
   }, [filteredChats]);
 
   return (

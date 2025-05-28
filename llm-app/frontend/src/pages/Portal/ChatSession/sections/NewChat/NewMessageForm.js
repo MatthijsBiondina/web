@@ -26,7 +26,7 @@ function NewMessageForm() {
   };
 
   return (
-    <MKBox width="100%" bgColor="white" borderRadius="xl" shadow="lg" p={3}>
+    <MKBox width="100%" bgColor="white" borderRadius="xl" shadow="lg" p={3} sx={{ marginTop: 3 }}>
       <MKBox width="100%" component="form" onSubmit={handleSubmit} autoComplete="off">
         <Grid container spacing={3}>
           <Grid item xs={12}>

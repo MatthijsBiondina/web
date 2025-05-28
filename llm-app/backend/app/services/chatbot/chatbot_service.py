@@ -24,7 +24,6 @@ class ChatbotService:
     def _get_chatbot_response(user: UserDocument, chat_id: str):
         chat = ChatDocument.objects(user=user, id=chat_id).first()
 
-        # get the last message from the chat
         gpt = GPT4O()
         for attempt_nr in range(ChatbotService.NR_OF_ATTEMPTS):
             logger.info(f"Attempt {attempt_nr} of {ChatbotService.NR_OF_ATTEMPTS}")
@@ -56,7 +55,7 @@ class ChatbotService:
 
     @staticmethod
     def _update_assistant_response(
-        user: UserDocument, chat: ChatDocument, answer: str, status="completed"
+        user: UserDocument, chat: ChatDocument, answer: str, status="success"
     ):
         logger.info(f"Updating assistant response with status: {status}")
         ChatMessageDocument.objects(

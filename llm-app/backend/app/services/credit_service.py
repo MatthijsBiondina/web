@@ -51,7 +51,7 @@ class CreditService:
             )
             raise e
         CreditOperationDocument.objects(user=user, id=credit_operation.id).update_one(
-            set__status="completed"
+            set__status="success"
         )
 
     @staticmethod

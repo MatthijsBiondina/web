@@ -1,8 +1,10 @@
 import logging
+import math
 from typing import Tuple
 
 from fastapi import HTTPException
 from bson import ObjectId
+from app.models.domain.roles import Role
 from app.models.mongo.chat_models import ChatDocument, ChatMessageDocument
 from app.models.mongo.user_models import UserDocument
 from app.services.credit_service import CreditService
@@ -36,8 +38,8 @@ class ChatService:
         chat = ChatDocument.objects(user=user, id=ObjectId(chat_id)).first()
         if chat:
             assistant_message = chat.messages[-1]
-            if assistant_message.status == "completed":
-                return "completed", assistant_message
+            if assistant_message.status == "success":
+                return "success", assistant_message
             elif assistant_message.status == "failed":
                 return "failed", assistant_message
             else:
@@ -87,6 +89,51 @@ class ChatService:
             return []
 
     @staticmethod
+    def get_chats_for_admin(
+        user: UserDocument, page_number: int = 1, page_size: int = 10
+    ):
+        assert Role.ADMIN.value in user.roles, "User is not an admin"
+        assert page_number > 0, "Page number must be greater than 0"
+        page_index = page_number - 1
+
+        # get Chatdocument
+        chats = ChatDocument.objects()
+        if not chats:
+            return [], 0, 0
+
+        total_chats = chats.count()
+        total_pages = math.ceil(total_chats / page_size)
+
+        if page_index < 0 or page_index >= total_pages:
+            raise RuntimeError("Invalid page number")
+
+        # get chats for the page without retrieving all chats
+
+        chat_dicts = []
+        for chat in (
+            chats.order_by("-created_at").skip(page_index * page_size).limit(page_size)
+        ):
+            try:
+                chat_dicts.append(
+                    {
+                        "id": str(chat.id),
+                        "subject": chat.subject,
+                        "created_at": chat.created_at,
+                        "user_id": str(chat.user.id),
+                        "user_name": chat.user.display_name,
+                        "user_email": chat.user.email,
+                        "user_photo_url": chat.user.photo_url,
+                        "status": chat.messages[-1].status,
+                        "email_sent": chat.email_sent,
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error converting chat to dict: {e}")
+                continue
+
+        return chat_dicts, total_pages, total_chats
+
+    @staticmethod
     def _get_chat(user: UserDocument, chat_id: str | None = None):
         if chat_id is None:
             raise RuntimeError("Chat ID is required")
@@ -103,7 +150,7 @@ class ChatService:
             user=user,
             text=SettingsService.get_setting("chat_initial_message"),
             sender="assistant",
-            status="completed",
+            status="success",
         )
         initial_message.save()
         chat = ChatDocument(
@@ -118,14 +165,14 @@ class ChatService:
     def _add_new_user_prompt(chat: ChatDocument, user: UserDocument, text: str):
         if not chat.messages[-1].sender == "assistant":
             raise RuntimeError("Last message is not an assistant message")
-        if not chat.messages[-1].status == "completed":
+        if not chat.messages[-1].status == "success":
             raise RuntimeError("Chatbot is not done with the previous message")
 
         user_message = ChatMessageDocument(
             user=user,
             text=text,
             sender="user",
-            status="completed",
+            status="success",
         )
         user_message.save()
         assistant_message = ChatMessageDocument(

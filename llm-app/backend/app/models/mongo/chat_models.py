@@ -5,6 +5,7 @@ from mongoengine import (
     DateTimeField,
     ListField,
     IntField,
+    BooleanField,
 )
 from datetime import datetime
 from app.models.mongo.user_models import UserDocument
@@ -12,7 +13,7 @@ from app.models.mongo.user_models import UserDocument
 
 class ChatMessageDocument(Document):
     SENDER_OPTIONS = ["user", "assistant"]
-    STATUS_OPTIONS = ["pending", "completed", "failed"]
+    STATUS_OPTIONS = ["pending", "success", "failed", "critical"]
 
     user = ReferenceField(UserDocument, required=True)
     text = StringField(required=True, default="")
@@ -46,6 +47,7 @@ class ChatDocument(Document):
     created_at = DateTimeField(required=True, default=datetime.now)
     updated_at = DateTimeField(required=True, default=datetime.now)
     nr_of_reads = IntField(required=True, default=0)
+    email_sent = BooleanField(required=True, default=False)
 
     meta = {"collection": "chats", "indexes": ["user"], "ordering": ["created_at"]}
 

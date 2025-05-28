@@ -62,7 +62,7 @@ async def check_message_status_route(
         status, message = ChatService.check_message_status(user, request.chat_id)
         logger.info(f"Status: {status}, Message: {message}")
         return MessageStatusResponse(
-            complete=(status == "completed"),
+            complete=(status == "success"),
             failed=(status == "failed"),
             message=None if message is None else MessageSchema(**message.to_dict()),
         )

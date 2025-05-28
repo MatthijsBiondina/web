@@ -6,6 +6,8 @@ import MKBox from "components/MKBox";
 import footerRoutes from "footer.routes";
 import ActionsOverview from "./sections/ActionsOverview";
 import DefaultFooter from "examples/Footers/DefaultFooter";
+import ChatsOverview from "./sections/ChatsOverview";
+import { ChatsAdminProvider } from "./contexts/ChatsAdminContext";
 
 function ChatsDatabase() {
   return (
@@ -24,7 +26,10 @@ function ChatsDatabase() {
           overflow: "hidden",
         }}
       >
-        <ActionsOverview />
+        <ChatsAdminProvider>
+          <ChatsOverview />
+          <ActionsOverview />
+        </ChatsAdminProvider>
       </Card>
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />

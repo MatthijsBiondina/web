@@ -83,4 +83,17 @@ export const chatService = {
       return { error: "Error getting chats" };
     }
   },
+
+  // Get chats admin
+  getAllChatsAdmin: async (pageNumber = 1) => {
+    try {
+      const response = await apiClient.get(
+        `/admin/chats-database/get-all-chats?pageNumber=${pageNumber}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error getting chats:", error);
+      return { error: "Error getting chats" };
+    }
+  },
 };

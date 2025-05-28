@@ -5,6 +5,7 @@ import TypingMessage from "../../components/TypingMessage";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useChat } from "../../contexts/ChatContext";
 import { useEffect } from "react";
+import Message from "../ExistingChat/MessageList/Message";
 
 function WelcomeMessage() {
   const { welcomeMessage, loading } = useGetWelcomeMessage();
@@ -22,7 +23,8 @@ function WelcomeMessage() {
             <CircularProgress />
           </MKBox>
         ) : (
-          <TypingMessage message={welcomeMessage} />
+          <Message message={welcomeMessage} sender="assistant" />
+          // <TypingMessage message={welcomeMessage} />
         )}
       </MKTypography>
     </MKBox>

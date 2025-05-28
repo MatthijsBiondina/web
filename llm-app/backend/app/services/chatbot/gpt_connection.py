@@ -110,7 +110,7 @@ class GPT4O:
         # get the last message from the chat
         history = []
         for message in chat.messages:
-            if message.status == "completed":
+            if message.status == "success":
                 history.append({"role": message.sender, "content": message.text})
 
         history.append(
@@ -144,7 +144,7 @@ class GPT4O:
         """
         history = []
         for message in chat.messages:
-            if message.status == "completed":
+            if message.status == "success":
                 history.append({"role": message.sender, "content": message.text})
 
         history.append(
