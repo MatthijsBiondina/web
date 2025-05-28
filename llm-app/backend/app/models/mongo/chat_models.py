@@ -19,6 +19,7 @@ class ChatMessageDocument(Document):
     text = StringField(required=True, default="")
     sender = StringField(required=True, choices=SENDER_OPTIONS)
     status = StringField(required=True, choices=STATUS_OPTIONS)
+    asked_professor = BooleanField(required=True, default=False)
     created_at = DateTimeField(required=True, default=datetime.now)
     updated_at = DateTimeField(required=True, default=datetime.now)
 
@@ -36,6 +37,8 @@ class ChatMessageDocument(Document):
             "id": str(self.id),
             "text": self.text,
             "sender": self.sender,
+            "status": self.status,
+            "asked_professor": self.asked_professor,
             "created_at": self.created_at,
         }
 

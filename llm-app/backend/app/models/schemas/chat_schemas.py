@@ -7,6 +7,8 @@ class MessageSchema(SchemaBase):
     text: str
     sender: str
     created_at: datetime
+    status: str
+    asked_professor: bool
 
 
 class CreateChatRequest(SchemaBase):

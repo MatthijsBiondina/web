@@ -11,6 +11,8 @@ const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [emailRequested, setEmailRequested] = useState(false);
+
   const { createChat: createChatService } = useCreateChat();
   const { sendMessage: sendMessageService } = useSendMessage();
   const { retrieveMessages: retrieveMessagesService } = useRetrieveMessages();
@@ -45,7 +47,6 @@ export const ChatProvider = ({ children }) => {
     if (!chatId) return;
     setLoading(true);
     const message = await waitForChatbotResponseService(chatId);
-    console.log("message", message);
     setMessages((prevMessages) => [...prevMessages, message]);
     setLoading(false);
   };
@@ -60,6 +61,8 @@ export const ChatProvider = ({ children }) => {
         waitForChatbotResponse,
         sendMessage,
         loading,
+        emailRequested,
+        setEmailRequested,
       }}
     >
       {children}

@@ -54,7 +54,6 @@ export const chatService = {
         apiClient
           .get(`/chat/check-message-status?chatId=${chatId}`)
           .then((response) => {
-            console.log("response", response.data);
             if (response.data.complete || response.data.failed) {
               resolve(response.data);
             } else {
