@@ -4,6 +4,7 @@ import {
   useRetrieveMessages,
   useWaitForChatbotResponse,
   useSendMessage,
+  useRetrieveEmailSentStatus,
 } from "../hooks/useChatService";
 import PropTypes from "prop-types";
 const ChatContext = createContext();
@@ -12,11 +13,12 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [emailRequested, setEmailRequested] = useState(false);
-
+  const [emailSent, setEmailSent] = useState(false);
   const { createChat: createChatService } = useCreateChat();
   const { sendMessage: sendMessageService } = useSendMessage();
   const { retrieveMessages: retrieveMessagesService } = useRetrieveMessages();
   const { waitForChatbotResponse: waitForChatbotResponseService } = useWaitForChatbotResponse();
+  const { retrieveEmailSentStatus: retrieveEmailSentStatusService } = useRetrieveEmailSentStatus();
 
   const createChat = async (subject, text) => {
     if (!subject.trim() || !text.trim()) return;
@@ -43,6 +45,13 @@ export const ChatProvider = ({ children }) => {
     return messages;
   };
 
+  const retrieveEmailSentStatus = async (chatId) => {
+    if (!chatId) return;
+    const emailSentStatus = await retrieveEmailSentStatusService(chatId);
+    setEmailSent(emailSentStatus);
+    return emailSentStatus;
+  };
+
   const waitForChatbotResponse = async (chatId) => {
     if (!chatId) return;
     setLoading(true);
@@ -58,11 +67,14 @@ export const ChatProvider = ({ children }) => {
         setMessages,
         createChat,
         retrieveMessages,
+        retrieveEmailSentStatus,
         waitForChatbotResponse,
         sendMessage,
         loading,
         emailRequested,
         setEmailRequested,
+        emailSent,
+        setEmailSent,
       }}
     >
       {children}

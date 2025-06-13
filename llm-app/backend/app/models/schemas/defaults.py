@@ -13,3 +13,8 @@ class SchemaBase(CamelModel):
 
     class Config:
         json_encoders = {datetime: lambda dt: dt.isoformat()}
+
+
+class SuccessResponse(SchemaBase):
+    success: bool
+    message: str

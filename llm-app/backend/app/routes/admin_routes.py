@@ -34,7 +34,7 @@ async def clear_chats_database(
     user: UserDocument = Depends(authorize(Role.ADMIN)),
 ):
     try:
-        ChatService.clear_chats_database()
+        ChatService.clear_chats_database(user)
         return {"message": "Chats database cleared successfully"}
     except Exception as e:
         logger.error(f"Error clearing chats database: {e}")

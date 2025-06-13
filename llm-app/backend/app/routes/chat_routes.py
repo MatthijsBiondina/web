@@ -13,6 +13,8 @@ from app.models.schemas.chat_schemas import (
     MessageStatusRequest,
     MessageSendResponse,
     MessageStatusResponse,
+    RetrieveEmailSentStatusRequest,
+    RetrieveEmailSentStatusResponse,
     RetrieveMessagesRequest,
     RetrieveMessagesResponse,
     GetAllChatsResponse,
@@ -80,6 +82,20 @@ async def retrieve_messages_route(
         return RetrieveMessagesResponse(
             messages=[MessageSchema(**message) for message in messages]
         )
+    except RuntimeError as e:
+        raise HTTPException(status_code=402, detail=str(e))
+
+
+@router.get("/retrieve-email-sent-status")
+async def retrieve_email_sent_status_route(
+    request: RetrieveEmailSentStatusRequest = Depends(),
+    user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
+):
+    try:
+        email_sent_status = ChatService.retrieve_email_sent_status(
+            user, request.chat_id
+        )
+        return RetrieveEmailSentStatusResponse(email_sent=email_sent_status)
     except RuntimeError as e:
         raise HTTPException(status_code=402, detail=str(e))
 

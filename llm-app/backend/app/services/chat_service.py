@@ -1,3 +1,4 @@
+import datetime
 import logging
 import math
 from typing import Tuple
@@ -184,13 +185,23 @@ class ChatService:
         assistant_message.save()
 
         ChatDocument.objects(id=chat.id).update_one(
-            push_all__messages=[user_message, assistant_message]
+            push_all__messages=[user_message, assistant_message],
+            set__updated_at=datetime.datetime.now(),
         )
         ChatbotService.run(user, chat.id)
         return user_message, assistant_message
 
     @staticmethod
-    def clear_chats_database():
+    def retrieve_email_sent_status(user: UserDocument, chat_id: str):
+        chat = ChatDocument.objects(user=user, id=ObjectId(chat_id)).first()
+        if chat:
+            return chat.email_sent
+        else:
+            raise RuntimeError("Chat not found")
+
+    @staticmethod
+    def clear_chats_database(user: UserDocument):
+        assert Role.ADMIN.value in user.roles, "User is not an admin"
         ChatDocument.objects.delete()
         ChatMessageDocument.objects.delete()
         logger.info("All chats have been deleted")

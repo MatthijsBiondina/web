@@ -45,6 +45,17 @@ export const chatService = {
     }
   },
 
+  // Retrieve email sent status
+  retrieveEmailSentStatus: async (chatId) => {
+    try {
+      const response = await apiClient.get(`/chat/retrieve-email-sent-status?chatId=${chatId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error retrieving email sent status:", error);
+      return { error: "Error retrieving email sent status" };
+    }
+  },
+
   // Wait for chatbot response
   waitForChatbotResponse: async (chatId) => {
     const pollInterval = 2000; // 2 seconds in milliseconds

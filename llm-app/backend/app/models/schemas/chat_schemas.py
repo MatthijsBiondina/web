@@ -48,6 +48,14 @@ class RetrieveMessagesResponse(SchemaBase):
     messages: list[MessageSchema]
 
 
+class RetrieveEmailSentStatusRequest(SchemaBase):
+    chat_id: str
+
+
+class RetrieveEmailSentStatusResponse(SchemaBase):
+    email_sent: bool
+
+
 class ChatSchema(SchemaBase):
     id: str
     subject: str

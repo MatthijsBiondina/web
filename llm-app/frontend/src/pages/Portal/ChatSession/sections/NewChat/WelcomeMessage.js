@@ -1,7 +1,6 @@
 import useGetWelcomeMessage from "../../hooks/useGetSetting";
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
-import TypingMessage from "../../components/TypingMessage";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useChat } from "../../contexts/ChatContext";
 import { useEffect } from "react";

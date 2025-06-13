@@ -105,7 +105,10 @@ function CheckContactDetailsForm({ handleAskProfessor, handleRejectAskProfessor 
                 variant="gradient"
                 color="info"
                 sx={{ width: "100%" }}
-                onClick={handleAskProfessor}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAskProfessor(userName, userEmail);
+                }}
                 disabled={!emailAddressesValid}
               >
                 Verzenden

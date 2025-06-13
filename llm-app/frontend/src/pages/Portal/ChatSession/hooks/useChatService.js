@@ -92,4 +92,31 @@ const useWaitForChatbotResponse = () => {
   return { loading, error, waitForChatbotResponse };
 };
 
-export { useCreateChat, useRetrieveMessages, useWaitForChatbotResponse, useSendMessage };
+const useRetrieveEmailSentStatus = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const retrieveEmailSentStatus = async (chatId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await chatService.retrieveEmailSentStatus(chatId);
+      return response.emailSent;
+    } catch (error) {
+      setError(error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { loading, error, retrieveEmailSentStatus };
+};
+
+export {
+  useCreateChat,
+  useRetrieveMessages,
+  useWaitForChatbotResponse,
+  useSendMessage,
+  useRetrieveEmailSentStatus,
+};

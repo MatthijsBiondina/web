@@ -31,3 +31,10 @@ services:
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     command: "http localhost:5000"
+
+  mailhog:
+    network_mode: "host"
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"

@@ -4,51 +4,23 @@ import PropTypes from "prop-types";
 import MessageForm from "./MessageForm";
 import MessageList from "./MessageList";
 import { useChat } from "../../contexts/ChatContext";
+import useAskProfessor from "../../hooks/useEmailService";
 import { useEffect, useState } from "react";
 import RequestEmailForm from "./RequestEmailForm";
 import CheckContactDetailsForm from "./CheckContactDetailsForm";
+import ConfirmEmailSent from "./ConfirmEmailSent";
+import UserInput from "./UserInput";
 function ExistingChat({ chatId }) {
-  const { messages, emailRequested, setEmailRequested } = useChat();
+  const { messages, emailRequested, setEmailRequested, retrieveEmailSentStatus } = useChat();
+
+  const {
+    askProfessor,
+    loading: askProfessorLoading,
+    error: askProfessorError,
+  } = useAskProfessor();
 
   const [showRequestEmailPrompt, setShowRequestEmailPrompt] = useState(false);
   const [showCheckContactDetailsPrompt, setShowCheckContactDetailsPrompt] = useState(false);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      console.log("lastMessage", lastMessage);
-      if (lastMessage.sender === "assistant" && lastMessage.status === "success") {
-        setEmailRequested(false);
-        setShowRequestEmailPrompt(false);
-      } else if (lastMessage.sender === "assistant" && lastMessage.status === "failed") {
-        setShowRequestEmailPrompt(true);
-      }
-    }
-  }, [messages]);
-
-  const handleRequestEmail = (e) => {
-    e.preventDefault();
-    setEmailRequested(true);
-    setShowRequestEmailPrompt(false);
-    setShowCheckContactDetailsPrompt(true);
-  };
-
-  const rejectRequestEmail = (e) => {
-    e.preventDefault();
-    setEmailRequested(false);
-    setShowRequestEmailPrompt(false);
-  };
-
-  const handleAskProfessor = (e) => {
-    e.preventDefault();
-    setShowCheckContactDetailsPrompt(true);
-  };
-
-  const handleRejectAskProfessor = (e) => {
-    e.preventDefault();
-    setShowCheckContactDetailsPrompt(false);
-    setShowRequestEmailPrompt(true);
-  };
 
   return (
     <Grid
@@ -68,24 +40,7 @@ function ExistingChat({ chatId }) {
     >
       <MKBox mt="auto">
         <MessageList chatId={chatId} />
-        {showRequestEmailPrompt ? (
-          <RequestEmailForm
-            chatId={chatId}
-            handleRequestEmail={handleRequestEmail}
-            rejectRequestEmail={rejectRequestEmail}
-          />
-        ) : (
-          <>
-            {showCheckContactDetailsPrompt ? (
-              <CheckContactDetailsForm
-                handleAskProfessor={handleAskProfessor}
-                handleRejectAskProfessor={handleRejectAskProfessor}
-              />
-            ) : (
-              <MessageForm chatId={chatId} />
-            )}
-          </>
-        )}
+        <UserInput chatId={chatId} />
       </MKBox>
     </Grid>
   );

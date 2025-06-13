@@ -2,7 +2,7 @@
 # scripts/start_with_ngrok.sh
 
 # Start the ngrok service
-docker compose up -d ngrok
+docker compose up -d ngrok mailhog
 
 # Wait a moment for ngrok to start
 echo "Waiting for ngrok to initialize..."
@@ -26,6 +26,7 @@ if [[ -z "$NGROK_URL" || "$NGROK_URL" == "null" ]]; then
 fi
 
 echo "ngrok tunnel established at: ${NGROK_URL}"
+echo "MailHog web interface available at: http://localhost:8025"
 
 # Export the URL to be used by the backend
 export NGROK_URL="${NGROK_URL}"
