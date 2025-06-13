@@ -11,13 +11,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 import footerRoutes from "footer.routes";
 import ProfilePicture from "./sections/ProfilePicture";
-import Navbar from "./components/Navbar";
-import portalRoutes from "routes/portal-routes";
 import NewChat from "./sections/NewChat";
 import ExistingChat from "./sections/ExistingChat";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ChatProvider } from "./contexts/ChatContext";
+import MKButton from "components/MKButton";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+
 function ChatSession() {
   const location = useLocation();
   const [chatId, setChatId] = useState(null);
@@ -33,10 +34,24 @@ function ChatSession() {
     setLoading(false);
   }, [location.search]);
 
+  const navigate = useNavigate();
+
   return (
     <>
       <ChatProvider>
-        <Navbar routes={portalRoutes} sticky transparent />
+        <MKButton
+          sx={{
+            position: "fixed",
+            top: "3rem",
+            left: "3rem",
+            zIndex: 100000,
+          }}
+          onClick={() => navigate("/portaal")}
+          variant="gradient"
+          color="white"
+        >
+          <NavigateBeforeIcon sx={{ mr: 1 }} /> Terug
+        </MKButton>
 
         <Grid container spacing={3} alignItems="center">
           <ProfilePicture />

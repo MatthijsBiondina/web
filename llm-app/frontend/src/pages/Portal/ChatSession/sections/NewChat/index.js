@@ -12,8 +12,8 @@ function NewChat() {
       md={7}
       lg={6}
       xl={4}
-      ml={{ xs: "auto", lg: 6 }}
-      mr={{ xs: "auto", lg: 6 }}
+      ml={{ xs: "auto", xl: 6 }}
+      mr={{ xs: "auto", xl: 6 }}
       sx={{
         minHeight: "100vh",
         display: "flex", // Add display flex
