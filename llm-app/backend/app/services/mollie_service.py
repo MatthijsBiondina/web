@@ -49,3 +49,12 @@ class MollieService:
             raise e
 
         return payment.status, order.id
+
+    @staticmethod
+    def get_payment_methods(sequence_type: str = "first"):
+        client = MollieService.get_client()
+
+        methods = client.methods.list(sequenceType=sequence_type).get_embedded(
+            "methods"
+        )
+        return [method["id"] for method in methods]

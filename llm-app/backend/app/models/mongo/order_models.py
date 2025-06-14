@@ -14,14 +14,14 @@ from datetime import datetime
 
 class OrderNumberSequence(Document):
     name = StringField(required=True, unique=True)
-    next_value = IntField(required=True, default=21734)
+    next_value = IntField(required=True, default=1)
 
     meta = {"collection": "sequences", "indexes": ["name"]}
 
     @classmethod
     def get_next_value(cls):
         sequence = cls.objects(name="order_number").modify(
-            upsert=True, new=True, inc__next_value=random.randint(1, 10)
+            upsert=True, new=True, inc__next_value=1
         )
         return sequence.next_value
 

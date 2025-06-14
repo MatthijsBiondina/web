@@ -1,18 +1,12 @@
-// @mui material components
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import CircularProgress from "@mui/material/CircularProgress";
-// Material Kit 2 PRO React components
+import { useState } from "react";
+import { Container, Grid, CircularProgress } from "@mui/material";
+import PricingCard from "../components/PricingCard";
 import MKBox from "components/MKBox";
 
-// Material Kit 2 PRO React examples
-import PricingCard from "../../components/PricingCard";
-
-import { useCreditPrice } from "../../hooks/useCreditPrice";
-import { useSubscriptionService } from "../../hooks/useSubscriptionsService";
+import { useSubscriptionService } from "../hooks/useSubscriptionsService";
 import { useSettings } from "hooks/useSettings";
-
-function Pricing() {
+import { useCreditPrice } from "../hooks/useCreditPrice";
+function SubscriptionManagement() {
   const { settingValue: currencySymbol, loading: currencySymbolLoading } =
     useSettings("currency-symbol");
   const { creditPrice: oneTimeAccessPrice, loading: oneTimeAccessLoading } =
@@ -24,18 +18,100 @@ function Pricing() {
     creditAmount: monthlyStandardCreditAmount,
     loading: monthlyStandardLoading,
   } = useCreditPrice("subscription-standard-monthly");
+
   const {
     subscriptionLevel,
-
+    subscriptionActive,
+    subscription,
     loading: subscriptionLoading,
+    error,
+    createSubscription,
+    cancelSubscription,
   } = useSubscriptionService();
 
   const loading =
+    currencySymbolLoading ||
     oneTimeAccessLoading ||
     oneTimeAccessLoadingDiscounted ||
     monthlyStandardLoading ||
-    currencySymbolLoading ||
     subscriptionLoading;
+
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
+
+  const handleCancelSubscription = async () => {
+    if (!subscription) return;
+    if (subscriptionLevel === "free") return;
+
+    try {
+      setActionLoading(true);
+      setActionError(null);
+      await cancelSubscription(subscription.id);
+      setCancelDialogOpen(false);
+    } catch (error) {
+      setActionError("Er is een fout opgetreden bij het opzeggen van je abonnement.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCreateSubscription = async (productKey) => {
+    try {
+      setActionLoading(true);
+      setActionError(null);
+      await createSubscription(productKey);
+    } catch (error) {
+      setActionError("Er is een fout opgetreden bij het aanmaken van je abonnement.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Onbekend";
+    return new Date(dateString).toLocaleDateString("nl-NL");
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active":
+        return "success";
+      case "pending":
+        return "warning";
+      case "cancelled":
+        return "error";
+      case "suspended":
+        return "error";
+      default:
+        return "default";
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "active":
+        return "Actief";
+      case "pending":
+        return "In behandeling";
+      case "cancelled":
+        return "Geannuleerd";
+      case "suspended":
+        return "Geschorst";
+      default:
+        return status;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container>
+        <MKBox py={6} display="flex" justifyContent="center">
+          <CircularProgress size={60} />
+        </MKBox>
+      </Container>
+    );
+  }
 
   return (
     <MKBox component="section" py={{ xs: 0, md: 12 }}>
@@ -57,6 +133,7 @@ function Pricing() {
                     route: "/",
                     label: subscriptionLevel === "free" ? "Nu in gebruik" : "Overstappen",
                     disabled: subscriptionLevel === "free",
+                    onClick: () => handleCancelSubscription(),
                   }}
                   specifications={[
                     `${currencySymbol}${oneTimeAccessPrice} per chat-sessie`,
@@ -76,11 +153,12 @@ function Pricing() {
                     route: "/",
                     label: subscriptionLevel === "standard" ? "Nu in gebruik" : "Overstappen",
                     disabled: subscriptionLevel === "standard",
+                    onClick: () => handleCreateSubscription("subscription-standard-monthly"),
                   }}
                   specifications={[
                     `${monthlyStandardCreditAmount} gratis chat-sessies per maand`,
                     `Daarna ${currencySymbol}${oneTimeAccessPriceDiscounted} per gesprek`,
-                    "Direct opzegbaar",
+                    "Iedere maand opzegbaar",
                   ]}
                 />
               </Grid>
@@ -92,4 +170,4 @@ function Pricing() {
   );
 }
 
-export default Pricing;
+export default SubscriptionManagement;

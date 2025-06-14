@@ -8,6 +8,7 @@ class UserDocument(Document):
     roles = ListField(
         StringField(), required=True, default=["unverified_user", "verified_user"]
     )
+    mollie_customer_id = StringField(required=False)
     has_accepted_terms = BooleanField(required=True, default=False)
     display_name = StringField(required=True, default="")
     photo_url = StringField(required=True, default="")

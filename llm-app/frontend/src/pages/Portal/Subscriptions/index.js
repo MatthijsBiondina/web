@@ -29,7 +29,8 @@ import footerRoutes from "footer.routes";
 import portalRoutes from "routes/portal-routes";
 
 // import Explanation from "./sections/Explanation";
-import Pricing from "./sections/Pricing";
+// import Pricing from "./sections/Pricing";
+import SubscriptionManagement from "./sections/SubscriptionManagement";
 import PageHeader from "components/MYPageHeader";
 import Card from "@mui/material/Card";
 function Subscriptions() {
@@ -50,7 +51,8 @@ function Subscriptions() {
           boxShadow: ({ boxShadows: { xxl } }) => xxl,
         }}
       >
-        <Pricing />
+        <SubscriptionManagement />
+        {/* <Pricing /> */}
         {/* <Explanation /> */}
       </Card>
 

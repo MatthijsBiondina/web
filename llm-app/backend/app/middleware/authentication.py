@@ -9,7 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenticationMiddleware(BaseHTTPMiddleware):
-    EXEMPTED_PATHS = ["/health", "/docs", "/openapi.json", "/api/webhooks/mollie"]
+    EXEMPTED_PATHS = [
+        "/health",
+        "/docs",
+        "/openapi.json",
+        "/api/webhooks/mollie",
+        "/api/webhooks/mollie/subscription",
+        "/api/webhooks/mollie/subscription-setup",
+    ]
 
     async def dispatch(self, request: Request, call_next):
 

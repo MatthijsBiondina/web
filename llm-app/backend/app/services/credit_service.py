@@ -4,6 +4,7 @@ from app.models.mongo.credit_models import (
 )
 from app.models.mongo.service_models import ServicePriceDocument
 from app.models.mongo.user_models import UserDocument
+from app.services.price_service import PriceService
 from app.services.settings_service import SettingsService
 import logging
 
@@ -22,6 +23,32 @@ class CreditService:
         service_price = ServicePriceDocument.objects.get(service_name=task_type)
 
         return balance.amount >= service_price.amount
+
+    @staticmethod
+    def award_credits(product_key: str, user: UserDocument):
+        _, credits = PriceService.get_credit_price(product_key)
+        _ = CreditService.__get_or_create_balance(user)
+        credit_operation = CreditOperationDocument(
+            user=user,
+            amount=credits,
+            operation_type="credit",
+            details=f"Awarded {credits} credits for {product_key}",
+        )
+        credit_operation.save()
+        try:
+            CreditBalanceDocument.objects(user=user).update_one(inc__amount=credits)
+        except Exception as e:
+            logger.error(f"Error awarding credits: {e}")
+            CreditOperationDocument.objects(
+                user=user, id=credit_operation.id
+            ).update_one(
+                set__status="failed",
+                set__details=f"Awarding {credits} credits failed: {str(e)}",
+            )
+            raise e
+        CreditOperationDocument.objects(user=user, id=credit_operation.id).update_one(
+            set__status="success"
+        )
 
     @staticmethod
     def deduct_credits(task_type: str, user: UserDocument):

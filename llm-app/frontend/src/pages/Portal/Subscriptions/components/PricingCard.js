@@ -147,6 +147,10 @@ function PricingCard({
                 size="small"
                 color={buttonColor}
                 disabled={action.disabled ?? false}
+                onClick={(e) => {
+                  e.preventDefault();
+                  action.onClick();
+                }}
                 fullWidth
               >
                 {action.label}
@@ -169,6 +173,10 @@ function PricingCard({
                 size="small"
                 color={buttonColor}
                 disabled={action.disabled ?? false}
+                onClick={(e) => {
+                  e.preventDefault();
+                  action.onClick();
+                }}
                 fullWidth
               >
                 {action.label}
@@ -211,6 +219,7 @@ PricingCard.propTypes = {
     route: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
+    onClick: PropTypes.func,
   }).isRequired,
 };
 
