@@ -4,7 +4,7 @@ from app.models.mongo.user_models import UserDocument
 
 
 class SubscriptionDocument(Document):
-    SUBSCRIPTION_LEVELS = ["free", "standard", "premium"]
+    SUBSCRIPTION_LEVELS = ["free", "standard"]
 
     user = ReferenceField(UserDocument, required=True)
     level = StringField(required=True, choices=SUBSCRIPTION_LEVELS, default="free")

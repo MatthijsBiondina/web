@@ -13,7 +13,7 @@ function NewQuestionCard() {
   return (
     <Card
       component={Link}
-      to="/portaal/chat-sessie"
+      to={balance > 0 ? "/portaal/chat-sessie" : "/portaal/eenmalige-toegang"}
       sx={{
         "&:hover": {
           transform: "scale(1.02)",
@@ -57,7 +57,7 @@ function NewQuestionCard() {
         <MKTypography variant="body2" color="text">
           Begin een nieuwe sessie met onze chatbot.
         </MKTypography>
-        {balance && (
+        {balance > 0 && (
           <Grid container justifyContent="center" alignItems="center" width="100%" mx="auto">
             <MKBadge badgeContent={`Tegoed: ${balance}`} color="info"></MKBadge>
           </Grid>

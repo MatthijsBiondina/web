@@ -1,6 +1,7 @@
 # app/routes/__init__.py
 from fastapi import APIRouter
 
+from app.routes.subscription_routes import router as subscription_routes
 from app.routes.user_routes import router as user_routes
 from app.routes.credit_routes import router as credit_routes
 from app.routes.prices_routes import router as prices_routes
@@ -33,3 +34,6 @@ router.include_router(mollie_webhook, prefix="/webhooks", tags=["webhooks"])
 router.include_router(chat_routes, prefix="/chat", tags=["chat"])
 router.include_router(email_routes, prefix="/email", tags=["email"])
 router.include_router(admin_routes, prefix="/admin", tags=["admin"])
+router.include_router(
+    subscription_routes, prefix="/subscriptions", tags=["subscriptions"]
+)

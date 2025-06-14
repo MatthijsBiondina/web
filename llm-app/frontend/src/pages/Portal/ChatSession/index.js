@@ -1,5 +1,6 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
+import Tooltip from "@mui/material/Tooltip";
 // import { useEffect, useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
 
@@ -39,19 +40,21 @@ function ChatSession() {
   return (
     <>
       <ChatProvider>
-        <MKButton
-          sx={{
-            position: "fixed",
-            top: "3rem",
-            left: "3rem",
-            zIndex: 100000,
-          }}
-          onClick={() => navigate("/portaal")}
-          variant="gradient"
-          color="white"
-        >
-          <NavigateBeforeIcon sx={{ mr: 1 }} /> Terug
-        </MKButton>
+        <Tooltip title="Je kunt later terugkomen en het gesprek voortzetten." placement="right">
+          <MKButton
+            sx={{
+              position: "fixed",
+              top: "3rem",
+              left: "3rem",
+              zIndex: 100000,
+            }}
+            onClick={() => navigate("/portaal")}
+            variant="gradient"
+            color="white"
+          >
+            <NavigateBeforeIcon sx={{ mr: 1 }} /> Terug
+          </MKButton>
+        </Tooltip>
 
         <Grid container spacing={3} alignItems="center">
           <ProfilePicture />

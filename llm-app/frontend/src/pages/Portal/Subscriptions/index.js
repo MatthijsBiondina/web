@@ -13,8 +13,6 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-// @mui material components
-
 // Material Kit 2 PRO React components
 import MKBox from "components/MKBox";
 
@@ -30,21 +28,31 @@ import footerRoutes from "footer.routes";
 // Images
 import portalRoutes from "routes/portal-routes";
 
-import Explanation from "./sections/Explanation";
+// import Explanation from "./sections/Explanation";
 import Pricing from "./sections/Pricing";
 import PageHeader from "components/MYPageHeader";
-
+import Card from "@mui/material/Card";
 function Subscriptions() {
   return (
     <>
       <DefaultNavbar routes={portalRoutes} />
 
       <PageHeader title="Kies het abonnement dat bij je past" />
-
-      <MKBox p={3}>
-        <Explanation />
+      <Card
+        // ref={contentRef}
+        sx={{
+          p: 2,
+          mx: { xs: 2, lg: 3 },
+          mt: -8,
+          mb: 4,
+          backgroundColor: ({ palette: { white }, functions: { rgba } }) => rgba(white.main, 0.8),
+          backdropFilter: "saturate(200%) blur(30px)",
+          boxShadow: ({ boxShadows: { xxl } }) => xxl,
+        }}
+      >
         <Pricing />
-      </MKBox>
+        {/* <Explanation /> */}
+      </Card>
 
       <MKBox pt={6} px={1} mt={6}>
         <DefaultFooter content={footerRoutes} />
