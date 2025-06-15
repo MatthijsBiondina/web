@@ -66,15 +66,19 @@ async def create_subscription_route(
 
     return RedirectUrlResponse(url=checkout_url)
 
-    raise NotImplementedError("Not implemented")
-
 
 @router.post("/cancel", response_model=SubscriptionResponse)
 async def cancel_subscription_route(
     request: CancelSubscriptionRequest,
     user: UserDocument = Depends(authorize(Role.VERIFIED_USER)),
 ):
-    raise NotImplementedError("Not implemented")
+    active_subscription = SubscriptionService.get_subscription(user)
+    if active_subscription.level == "free":
+        raise HTTPException(status_code=400, detail="User has no active subscription")
+
+    SubscriptionService.cancel_subscription(user, active_subscription.id)
+
+    return SubscriptionResponse(**active_subscription.to_dict())
 
 
 @router.get("/{subscription_id}", response_model=SubscriptionResponse)

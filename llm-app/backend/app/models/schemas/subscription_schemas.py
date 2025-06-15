@@ -5,7 +5,7 @@ from datetime import datetime
 class SubscriptionResponse(SchemaBase):
     id: str
     level: str
-    amount: int
+    amount: float
     currency: str
     interval: str
     status: str

@@ -36,8 +36,13 @@ async def mollie_webhook(request: Request, id: str = Form(...)):
 
 @router.post("/mollie/subscription")
 async def mollie_subscription_webhook(request: Request, id: str = Form(...)):
-    raise NotImplementedError("Not implemented")
-    return Response(status_code=200)
+    try:
+        payment_id = id
+        SubscriptionService.process_paid_subscription(payment_id)
+        logger.info(f"Mollie subscription webhook received for payment {payment_id}")
+
+    except Exception as e:
+        logger.error(f"Error updating payment status: {e}")
 
 
 @router.get("/mollie/subscription")
@@ -63,7 +68,7 @@ async def mollie_subscription_setup_webhook(request: Request, id: str = Form(...
                 order.user,
                 datetime.datetime.now() + datetime.timedelta(days=31),
             )
-            CreditService.award_credits("subscription-standard-monthly", order.user)
+            SubscriptionService.process_paid_subscription(payment_id)
 
         return Response(status_code=200)
     except Exception as e:

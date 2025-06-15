@@ -51,6 +51,19 @@ class MollieService:
         return payment.status, order.id
 
     @staticmethod
+    def get_payment_details(payment_id: str):
+        client = MollieService.get_client()
+        payment = client.payments.get(payment_id)
+        return payment
+
+    @staticmethod
+    def get_subscription_details(customer_id: str, subscription_id: str):
+        client = MollieService.get_client()
+        customer = client.customers.get(customer_id)
+        subscription = customer.subscriptions.get(subscription_id)
+        return subscription
+
+    @staticmethod
     def get_payment_methods(sequence_type: str = "first"):
         client = MollieService.get_client()
 

@@ -3,7 +3,7 @@ from mongoengine import (
     StringField,
     DateTimeField,
     ReferenceField,
-    IntField,
+    DecimalField,
     BooleanField,
 )
 from datetime import datetime
@@ -22,7 +22,7 @@ class SubscriptionDocument(Document):
     mollie_customer_id = StringField(required=False)
 
     # Subscription details
-    amount = IntField(required=True, default=0)
+    amount = DecimalField(required=True, precision=2, default=0)
     currency = StringField(required=True, max_length=3, default="EUR")
     interval = StringField(
         required=True, choices=SUBSCRIPTION_INTERVALS, default="month"

@@ -7,6 +7,7 @@ from app.models.mongo.credit_models import CreditPriceDocument
 from app.models.mongo.order_models import OrderDocument, OrderNumberSequence
 from app.models.mongo.subscription_models import SubscriptionDocument
 from app.models.mongo.user_models import UserDocument
+from app.services.credit_service import CreditService
 from app.services.mollie_service import MollieService
 
 
@@ -72,9 +73,7 @@ class SubscriptionService:
             order_number = f"SUB-{OrderNumberSequence.get_next_value():06d}"
 
             # Create first payment to establish mandate
-            redirect_url = (
-                f"{os.getenv('FRONTEND_URL')}/portaal/abonnementen/bevestiging"
-            )
+            redirect_url = f"{os.getenv('FRONTEND_URL')}/portaal/abonnementen"
             webhook_url = (
                 f"{os.getenv('BACKEND_URL')}/api/webhooks/mollie/subscription-setup"
             )
@@ -145,8 +144,6 @@ class SubscriptionService:
             if next_payment_date is None:
                 next_payment_date = datetime.datetime.now()
 
-            logger.info(type(next_payment_date))
-
             subscription_data = {
                 "amount": {
                     "value": str(subscription_details["amount"]),
@@ -155,11 +152,12 @@ class SubscriptionService:
                 "interval": subscription_details["interval"],
                 "description": subscription_details["description"],
                 "startDate": next_payment_date.strftime("%Y-%m-%d"),
+                # "nextPaymentDate": next_payment_date.strftime("%Y-%m-%d"),
                 "webhookUrl": f"{os.getenv('BACKEND_URL')}/api/webhooks/mollie/subscription",
                 "mandateId": mandate_id,
                 "metadata": {
                     "user_id": str(user.id),
-                    "product_key": "subscription-standard-monthly",
+                    "product_key": "standard",
                 },
             }
 
@@ -176,7 +174,7 @@ class SubscriptionService:
                 set__mollie_customer_id=customer_id,
                 set__amount=subscription_details["amount"],
                 set__currency=subscription_details["currency"],
-                set__interval=subscription_details["interval"],
+                set__interval="month",
                 set__status="active",
                 set__start_date=datetime.datetime.now(),
                 set__next_payment_date=next_payment_date,
@@ -189,11 +187,47 @@ class SubscriptionService:
             logger.error(f"Error creating subscription: {e}")
             raise
 
-        return os.getenv("FRONTEND_URL") + "/portaal/abonnementen/bevestiging"
+        return os.getenv("FRONTEND_URL") + "/portaal/abonnementen"
 
     @staticmethod
     def cancel_subscription(user: UserDocument, subscription_id: str) -> bool:
-        raise NotImplementedError("Not implemented")
+        try:
+            subscription = SubscriptionService.__get_subscription_or_create_placeholder(
+                user
+            )
+            if subscription.level == "free":
+                logger.info("User has no active subscription")
+                return True
+
+                # Cancel with Mollie if there's an active Mollie subscription
+            SubscriptionService._cancel_subscription_with_mollie(subscription)
+
+            subscription.update(
+                set__level="free",
+                set__mollie_subscription_id=None,
+                set__amount=0,
+                set__start_date=datetime.datetime.now(),
+                set__cancelled_at=datetime.datetime.now(),
+                set__updated_at=datetime.datetime.now(),
+            )
+            subscription.save()
+
+        except Exception as e:
+            logger.error(f"Error canceling subscription: {e}")
+            raise
+
+    @staticmethod
+    def _cancel_subscription_with_mollie(subscription: SubscriptionDocument):
+        try:
+            mollie_client = MollieService.get_client()
+            customer = mollie_client.customers.get(subscription.mollie_customer_id)
+            customer.subscriptions.delete(subscription.mollie_subscription_id)
+        except Exception as e:
+            logger.error(f"Error canceling subscription with Mollie: {e}")
+            subscription.update(
+                set__requires_manual_review=True,
+            )
+            subscription.save()
 
     @staticmethod
     def sync_subscription_status(mollie_subscription_id: str) -> bool:
@@ -229,6 +263,36 @@ class SubscriptionService:
         except Exception as e:
             logger.error(f"Error checking customer mandates: {e}")
             return []
+
+    @staticmethod
+    def process_paid_subscription(payment_id: str):
+        payment = MollieService.get_payment_details(payment_id)
+
+        if payment.metadata.get("product_key") != "standard":
+            logger.info(f"Payment {payment_id} is not a subscription payment")
+            return
+
+        if payment.status != "paid":
+            logger.info(f"Payment {payment_id} is not a paid subscription payment")
+
+        user_id = payment.metadata.get("user_id")
+        user = UserDocument.objects.get(id=user_id)
+
+        CreditService.award_credits("subscription-standard-monthly", user)
+
+        subscription = SubscriptionService.__get_subscription_or_create_placeholder(
+            user
+        )
+        mollie_subscription = MollieService.get_subscription_details(
+            subscription.mollie_customer_id, subscription.mollie_subscription_id
+        )
+        subscription.update(
+            set__status="active",
+            set__next_payment_date=datetime.datetime.strptime(
+                mollie_subscription.next_payment_date, "%Y-%m-%d"
+            ),
+        )
+        subscription.save()
 
     @staticmethod
     def _ensure_mollie_customer(user: UserDocument) -> str:

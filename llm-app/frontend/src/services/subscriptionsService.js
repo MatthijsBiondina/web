@@ -29,7 +29,9 @@ export const subscriptionsService = {
   // Cancel a subscription
   async cancelSubscription(subscriptionId) {
     try {
-      const response = await apiClient.post(`/subscriptions/cancel/${subscriptionId}`);
+      const response = await apiClient.post("/subscriptions/cancel", {
+        subscriptionId,
+      });
       return response.data;
     } catch (error) {
       console.error("Error canceling subscription:", error);

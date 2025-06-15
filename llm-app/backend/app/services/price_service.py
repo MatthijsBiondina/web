@@ -2,7 +2,6 @@ from app.models.mongo.credit_models import CreditPriceDocument
 from fastapi import HTTPException
 import logging
 from app.models.mongo.user_models import UserDocument
-from app.services.subscription_service import SubscriptionService
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,17 @@ class PriceService:
         )
 
     @staticmethod
+    def get_amount_of_credits(product: str):
+        try:
+            credit_price = CreditPriceDocument.objects.get(key=product)
+        except CreditPriceDocument.DoesNotExist:
+            raise HTTPException(status_code=404, detail="Credit price not found")
+        return credit_price.amount_credits
+
+    @staticmethod
     def get_one_time_access_price(user: UserDocument):
+        from app.services.subscription_service import SubscriptionService
+
         subscription_level = SubscriptionService.get_subscription_level(user)
 
         try:

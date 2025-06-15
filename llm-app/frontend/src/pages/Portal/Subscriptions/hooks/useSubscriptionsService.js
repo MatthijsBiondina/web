@@ -44,11 +44,11 @@ export const useSubscriptionService = () => {
   const cancelSubscription = async (subscriptionId) => {
     try {
       setLoading(true);
-      await subscriptionsService.cancelSubscription(subscriptionId);
+      const response = await subscriptionsService.cancelSubscription(subscriptionId);
 
       await fetchSubscription();
 
-      return true;
+      return response;
     } catch (error) {
       setError(error);
       throw error;

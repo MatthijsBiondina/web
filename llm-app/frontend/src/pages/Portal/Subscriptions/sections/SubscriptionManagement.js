@@ -21,24 +21,22 @@ function SubscriptionManagement() {
 
   const {
     subscriptionLevel,
-    subscriptionActive,
     subscription,
     loading: subscriptionLoading,
-    error,
     createSubscription,
     cancelSubscription,
   } = useSubscriptionService();
+
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
 
   const loading =
     currencySymbolLoading ||
     oneTimeAccessLoading ||
     oneTimeAccessLoadingDiscounted ||
     monthlyStandardLoading ||
-    subscriptionLoading;
-
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [actionError, setActionError] = useState(null);
+    subscriptionLoading ||
+    actionLoading;
 
   const handleCancelSubscription = async () => {
     if (!subscription) return;
@@ -48,7 +46,6 @@ function SubscriptionManagement() {
       setActionLoading(true);
       setActionError(null);
       await cancelSubscription(subscription.id);
-      setCancelDialogOpen(false);
     } catch (error) {
       setActionError("Er is een fout opgetreden bij het opzeggen van je abonnement.");
     } finally {
@@ -57,6 +54,9 @@ function SubscriptionManagement() {
   };
 
   const handleCreateSubscription = async (productKey) => {
+    if (!subscription) return;
+    if (subscriptionLevel !== "free") return;
+
     try {
       setActionLoading(true);
       setActionError(null);
@@ -65,41 +65,6 @@ function SubscriptionManagement() {
       setActionError("Er is een fout opgetreden bij het aanmaken van je abonnement.");
     } finally {
       setActionLoading(false);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "Onbekend";
-    return new Date(dateString).toLocaleDateString("nl-NL");
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "success";
-      case "pending":
-        return "warning";
-      case "cancelled":
-        return "error";
-      case "suspended":
-        return "error";
-      default:
-        return "default";
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case "active":
-        return "Actief";
-      case "pending":
-        return "In behandeling";
-      case "cancelled":
-        return "Geannuleerd";
-      case "suspended":
-        return "Geschorst";
-      default:
-        return status;
     }
   };
 

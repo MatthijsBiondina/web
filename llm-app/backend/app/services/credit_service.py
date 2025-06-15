@@ -26,7 +26,7 @@ class CreditService:
 
     @staticmethod
     def award_credits(product_key: str, user: UserDocument):
-        _, credits = PriceService.get_credit_price(product_key)
+        credits = PriceService.get_amount_of_credits(product_key)
         _ = CreditService.__get_or_create_balance(user)
         credit_operation = CreditOperationDocument(
             user=user,
